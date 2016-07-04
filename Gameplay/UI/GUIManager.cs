@@ -9,5 +9,10 @@ namespace UI
         {
             InputManager.EndTurn();
         }
+
+        public void DoCover()
+        {
+            InputManager.StartAction(0);
+        }
     }
 }

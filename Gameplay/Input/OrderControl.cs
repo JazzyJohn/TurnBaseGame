@@ -15,6 +15,7 @@ namespace InputLogic
         bool newSelection = false;
         Path path;
         LineRenderer pathRenderer;
+        int nextAction = -1;
         // Use this for initialization
         void Awake()
         {
@@ -80,32 +81,53 @@ namespace InputLogic
         }
         public void Click()
         {
-            if(selectedPawn == null)
+            Cell selectedCell = GridController.GetSelectedCell();
+            if (nextAction!=-1)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit[] hits = Physics.RaycastAll(ray);
-                foreach(RaycastHit hit in hits)
+
+                List<GameObject> gObjects = selectedCell.GetObjects();
+                GameObject target = null;
+                if (selectedCell.GetObjects().Count > 0)
                 {
-                    Pawn pawn  = hit.transform.GetComponent<Pawn>();
-                    if (pawn != null && pawn.IsControllable())
-                    {
-                        selectedPawn = pawn;
-                        newSelection = true;
-                        Debug.Log("Select" + selectedPawn);
-                        break;
-                    }
+                    target = selectedCell.GetObjects()[0];
                 }
+                ActionManager.DoAction(nextAction, target, selectedPawn);
+                nextAction = -1;
             }
             else
             {
-                Cell selectedCell =  GridController.GetSelectedCell();
-                Debug.Log("Goto" + selectedCell);
-                BaseAI  baseAI  = selectedPawn.GetAI();
-                if (selectedCell != selectedPawn.GetPosition() &&  baseAI.CanMove())
+                if (selectedPawn == null)
                 {
-                    baseAI.MoveTo(selectedCell);
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit[] hits = Physics.RaycastAll(ray);
+                    foreach (RaycastHit hit in hits)
+                    {
+                        Pawn pawn = hit.transform.GetComponent<Pawn>();
+                        if (pawn != null && pawn.IsControllable())
+                        {
+                            selectedPawn = pawn;
+                            newSelection = true;
+                            Debug.Log("Select" + selectedPawn);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.Log("Goto" + selectedCell);
+                    BaseAI baseAI = selectedPawn.GetAI();
+                    if (selectedCell != selectedPawn.GetPosition() && baseAI.CanMove())
+                    {
+                        baseAI.MoveTo(selectedCell);
+                    }
                 }
             }
+          
+        }
+        public void DoAction(int i)
+        {
+            nextAction = i;
+         
         }
     }
 }

@@ -8,6 +8,8 @@ namespace AI
     {
         Pawn owner;
         public int startActionPoints = 2;
+        public ActionData actionData;
+        public delegate ActionData CreateNewData();
         int actionPoints;
         const int MOVE_COST = 1;
         public void Init(Pawn owner)
@@ -30,6 +32,20 @@ namespace AI
         public void NewTurn()
         {
             actionPoints = startActionPoints;
+        }
+
+        public void ClearOfAnyData()
+        {
+            actionData = null;
+        }
+
+        public T CreateOrAquireData<T>(CreateNewData maker) where T: ActionData
+        {
+            if (actionData == null)
+            {
+                actionData = maker();
+            }
+            return actionData as T;
         }
     }
 }

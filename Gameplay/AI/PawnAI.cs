@@ -39,5 +39,20 @@ namespace AI
         {
            
         }
+
+        public Pawn GetOwner()
+        {
+            return owner;
+        }
+
+        public void ClearOfAnyData()
+        {
+            actionService.ClearOfAnyData();
+        }
+
+        public T CreateOrAquireData<T>(ActionService.CreateNewData maker) where T : ActionData
+        {
+            return actionService.CreateOrAquireData<T>(maker);
+        }
     }
 }

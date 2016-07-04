@@ -15,7 +15,7 @@ namespace PawnLogic
     {
         public const string TURNING_ANGLE = "turning angle";
         public const string FORWARD_SPEED = "forward speed";
-        
+        public const string TAKE_COVER = "cover";
         public const float MIN_ANGLE = 2.0f;
         Cell position;
         public State[] states;
@@ -76,6 +76,10 @@ namespace PawnLogic
             }
         }
 
+        public void DoCover()
+        {
+            animator.SetBool(TAKE_COVER, true);
+        }
         public bool IsControllable()
         {
             return isControllable;

@@ -13,6 +13,7 @@ namespace Grid
         public int z;
 
         List<Pawn> ocupants = new List<Pawn>();
+        List<GameObject> gObjects = new List<GameObject>();
         public void Leave(Pawn pawn)
         {
             ocupants.Remove(pawn);
@@ -22,9 +23,17 @@ namespace Grid
         {
             ocupants.Add(pawn);
         }
+        public void Enter(GameObject go)
+        {
+            gObjects.Add(go);
+        }
         public override string ToString()
         {
             return x + " " + z;
+        }
+        public List<GameObject> GetObjects()
+        {
+            return gObjects;
         }
     }
 

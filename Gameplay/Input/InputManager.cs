@@ -102,5 +102,10 @@ namespace InputLogic
         {
             GameFlowController.EndTurn();
         }
+
+        public static void StartAction(int p)
+        {
+            s_instance.orderControl.DoAction(p);
+        }
     }
 }
