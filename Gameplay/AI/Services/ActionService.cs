@@ -47,5 +47,27 @@ namespace AI
             }
             return actionData as T;
         }
+
+        public void AddActionCallback(BaseAction action)
+        {
+            if(actionData == null)
+            {
+                Debug.LogWarning("NO Action Data info inside AddActionCallback");
+                return;
+            }
+            actionData.waiterForAi = action;
+        }
+
+        public void SendInfoForActions(AIEvent aIEvent)
+        {
+            if (actionData!= null && actionData.waiterForAi.IsSuitableEvent(aIEvent, owner.GetAI()))
+            {
+                BaseAction action =   actionData.waiterForAi;
+                actionData.waiterForAi = null;
+                action.FinishAction(aIEvent, owner.GetAI());
+            }
+          
+        }
+        
     }
 }

@@ -3,11 +3,18 @@ using System.Collections;
 using PawnLogic;
 namespace AI
 {
+    public enum AIEvent
+    {
+        NavigationComplited,
+        Invalid
+    }
+
     public class PawnAI : BaseAI
     {
         Pawn owner;
         NavigationService navigationService;
         ActionService actionService;
+        ParamsService paramsService;
         public void Init(Pawn owner)
         {
             this.owner = owner;
@@ -15,6 +22,7 @@ namespace AI
             navigationService.Init(owner);
             actionService = GetComponent<ActionService>();
             actionService.Init(owner);
+            paramsService = GetComponent<ParamsService>();
         }
 
         public override bool CanMove()
@@ -53,6 +61,26 @@ namespace AI
         public T CreateOrAquireData<T>(ActionService.CreateNewData maker) where T : ActionData
         {
             return actionService.CreateOrAquireData<T>(maker);
+        }
+
+        public void AddActionCallback(BaseAction actionSequence)
+        {
+            actionService.AddActionCallback(actionSequence);
+        }
+
+        public void NavigationComplited()
+        {
+            actionService.SendInfoForActions(AIEvent.NavigationComplited);
+        }
+
+        public void ChangeParam(CharacterParam param, float amount)
+        {
+            paramsService.SetParam(param, paramsService.GetValue(param) + amount);
+        }
+
+        public ParamsService GetParamsService()
+        {
+            return paramsService;
         }
     }
 }

@@ -79,6 +79,8 @@ namespace AI
                     currentWaypoint++;
                     if (currentWaypoint >= path.vectorPath.Count)
                     {
+                        owner.GetAI().NavigationComplited();
+                        
                         pathComplete = true;
                         path = null;
                     }

@@ -94,5 +94,12 @@ namespace PawnLogic
         {
             return pawnAI;
         }
+
+
+        public void StartDeath()
+        {
+            Debug.Log("I'm DEAD");
+            Destroy(gameObject);
+        }
     }
 }
