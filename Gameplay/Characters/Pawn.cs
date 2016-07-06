@@ -20,8 +20,11 @@ namespace PawnLogic
         Cell position;
         public State[] states;
         public float rotationSpeed;
-
+        public float cacheAngle;        
         public bool isControllable;
+        float currentSpeed = 0.0f;
+        float speedTime = 0.0f;
+        float tempLerpSpeed = 0.0f;
         State currentState;
         PawnAI pawnAI;
         Animator animator;
@@ -38,6 +41,7 @@ namespace PawnLogic
         public void Start()
         {
             position = GridController.GetCellFromCoord(myTransform.position);
+            myTransform.position = GridController.GetV3FromCell(position);
         }
         public void PlayState(State state)
         {
@@ -49,21 +53,56 @@ namespace PawnLogic
             {
                 return;
             }
-
-            float angle = Vector3.Angle(myTransform.forward, direction);
-            if( Mathf.Abs(angle) > MIN_ANGLE)
-            { 
-                //animator.SetFloat(FORWARD_SPEED, 0);
-                animator.SetFloat(TURNING_ANGLE, angle /360.0f);
-                myTransform.LookAt(myTransform.position+ Vector3.RotateTowards(myTransform.forward, direction, rotationSpeed*Time.deltaTime, float.MaxValue));
-                return;
+            direction.y = 0;
+            direction.Normalize();
+            Vector3 flatForward = myTransform.forward;
+            flatForward.y = 0;
+            flatForward.Normalize();
+            float angle = Vector3.Angle(flatForward, direction) * Mathf.Sign(Vector3.Cross(flatForward,direction).y);
+            if (Mathf.Sign(angle) != Mathf.Sign(cacheAngle) || Mathf.Abs(angle) > Mathf.Abs(cacheAngle))
+            {
+                cacheAngle = angle;
             }
-            animator.SetFloat(FORWARD_SPEED, speed);
+            if( Mathf.Abs(angle) > MIN_ANGLE)
+            {
+               
+                //animator.SetFloat(FORWARD_SPEED, 0);
+                animator.SetFloat(TURNING_ANGLE, Mathf.Min(1.0f,cacheAngle / 90.0f));
+                myTransform.LookAt(myTransform.position+ Vector3.RotateTowards(myTransform.forward, direction, rotationSpeed*Time.deltaTime, float.MaxValue));
+                if (currentSpeed == 0)
+                    return;
+            }
+            else
+            {
+                animator.SetFloat(TURNING_ANGLE,0.0f);
+                myTransform.LookAt(myTransform.position + Vector3.RotateTowards(myTransform.forward, direction, rotationSpeed * Time.deltaTime, float.MaxValue));
+            }
+            if(speedTime > 1.0f)
+            {
+                tempLerpSpeed = currentSpeed;
+                speedTime = 0.0f;
+            }
+            else
+            {
+                Debug.Log(Mathf.Abs(speed - tempLerpSpeed) + " " + Mathf.Epsilon);
+                if (Mathf.Abs(speed - tempLerpSpeed) > Mathf.Epsilon)
+                {
+                    speedTime += Time.fixedDeltaTime;
+                    currentSpeed = Mathf.Lerp(tempLerpSpeed, speed, speedTime);
+                }
+            }
+           
+            
+            cacheAngle = 0.0f;
+            animator.SetFloat(FORWARD_SPEED, currentSpeed);
         }
         public void StopMove()
         {
             animator.SetFloat(TURNING_ANGLE, 0);
             animator.SetFloat(FORWARD_SPEED, 0);
+            currentSpeed = 0.0f;
+            tempLerpSpeed = 0.0f;
+            speedTime = 0.0f;
         }
         public void Update()
         {

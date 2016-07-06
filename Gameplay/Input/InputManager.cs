@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using GameFlow;
+using UnityEngine.EventSystems;
 
 namespace InputLogic
 {
@@ -36,7 +37,7 @@ namespace InputLogic
 
         private void ResolveClick()
         {
-            if(Input.GetMouseButtonDown(0))
+            if(Input.GetMouseButtonDown(0) && !IsMouseOverUI())
             {
                 orderControl.Click();
             }
@@ -106,6 +107,16 @@ namespace InputLogic
         public static void StartAction(int p)
         {
             s_instance.orderControl.DoAction(p);
+        }
+
+        public bool IsMouseOverUI()
+        {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+
+                return true;
+            }
+            return false;
         }
     }
 }

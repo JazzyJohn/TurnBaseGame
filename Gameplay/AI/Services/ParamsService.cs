@@ -8,7 +8,9 @@ namespace AI
     {
         Health,
         MaxHealth,
-        Defence
+        Defence,
+        NormalMovment_Distance,
+        RunMovment_Distance
     }
     public class ParamsService : MonoBehaviour
     {

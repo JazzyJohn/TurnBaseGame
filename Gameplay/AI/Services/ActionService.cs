@@ -12,6 +12,7 @@ namespace AI
         public delegate ActionData CreateNewData();
         int actionPoints;
         const int MOVE_COST = 1;
+        const int RUN_COST = 2;
         public void Init(Pawn owner)
         {
             this.owner = owner;
@@ -24,9 +25,17 @@ namespace AI
         }
 
 
-        public void StartMoveOnPath()
+        public void StartMoveOnPath(bool isRun)
         {
-            actionPoints-= MOVE_COST ;
+            if(isRun)
+            {
+                actionPoints -= RUN_COST;
+            }
+            else
+            {
+                actionPoints -= MOVE_COST;
+            }
+           
         }
 
         public void NewTurn()
@@ -68,6 +77,11 @@ namespace AI
             }
           
         }
-        
+
+
+        public bool CouldRun()
+        {
+            return actionPoints >= RUN_COST;
+        }
     }
 }

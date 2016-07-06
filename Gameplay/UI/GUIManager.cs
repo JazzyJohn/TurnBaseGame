@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using InputLogic;
+
 namespace UI
 {
     public class GUIManager : MonoBehaviour {
 
+       
 
         public void EndTurnBtn()
         {
@@ -15,5 +17,6 @@ namespace UI
         {
             InputManager.StartAction(0);
         }
+        
     }
 }

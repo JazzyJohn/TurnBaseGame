@@ -8,11 +8,17 @@ namespace AI
     public class NavigationService : MonoBehaviour
     {
         public float commonSpeed = 1.0f;
+        public float runSpeed = 2.0f;
+        public int parkingWaypointAmount = 2;
+        public int NormalDistance = 5;
+        public int RunDistance = 10;
         protected Seeker seeker;
+        protected ParamsService paramService;
         protected Path path;
         private int currentWaypoint = 0;
         bool waitForPath = false;
         protected bool pathComplete = false;
+        public float cuttingEdgeDistance = 0.5f;
         Vector3 pathTarget;
         float desiredSpeed;
         Pawn owner;
@@ -22,6 +28,14 @@ namespace AI
         {
             seeker = GetComponent<Seeker>();
             desiredSpeed = commonSpeed;
+            paramService = GetComponent<ParamsService>();
+            if(paramService == null || seeker == null)
+            {
+                Debug.LogError("No ParamsService or No Seeker");
+                enabled = false;
+            }
+            paramService.SetParam(CharacterParam.NormalMovment_Distance, NormalDistance);
+            paramService.SetParam(CharacterParam.RunMovment_Distance, RunDistance);
         }
 
         public void OnPathComplete(Path p)
@@ -31,11 +45,28 @@ namespace AI
                 Debug.Log("Yay, we got a path back. Did it have an error? " + p.error);
                 if (!p.error)
                 {
-                    path = p;
+                    int pathLenght = p.vectorPath.Count;
+                    bool isItPossible = paramService.GetValue(CharacterParam.RunMovment_Distance) > pathLenght;
+                    bool isRunNeeded = paramService.GetValue(CharacterParam.NormalMovment_Distance) < pathLenght;
+                    waitForPath = false;
+
+                    if (!isItPossible || (isRunNeeded && !owner.GetAI().CouldRun()))
+                    {
+                        return;
+                    }
+                    path = p;   
                     //Reset the waypoint counter
                     currentWaypoint = 0;
-                    waitForPath = false;
-                    owner.GetAI().StartMoveOnPath();
+                   
+                    owner.GetAI().StartMoveOnPath(isRunNeeded);
+                    if(isRunNeeded)
+                    {
+                        desiredSpeed = runSpeed;
+                    }
+                    else
+                    {
+                        desiredSpeed = commonSpeed;
+                    }
                 }
             }
         }
@@ -69,12 +100,30 @@ namespace AI
             {
 
                 //Direction to the next waypoint
-                Vector3 dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
+                Vector3 cellBasedPoint = GridController.NormalizeV3( path.vectorPath[currentWaypoint]);
+                Vector3 dir = (cellBasedPoint - transform.position).normalized;
+                bool isNeedParking  = currentWaypoint >= path.vectorPath.Count - parkingWaypointAmount;
+                float reachDistance;
+                if (currentWaypoint == path.vectorPath.Count - 1)
+                {
+                    reachDistance = REACH_DISTANCE;
+                }
+                else
+                {
+                    reachDistance = cuttingEdgeDistance;
+                }
+
+                if (isNeedParking)
+                {
+                    desiredSpeed = commonSpeed;
+                }
+
                 owner.MoveTo(dir, desiredSpeed);
 
                 //Check if we are close enough to the next waypoint
                 //If we are, proceed to follow the next waypoint
-                if (IsReached(transform.position, path.vectorPath[currentWaypoint]))
+               
+                if (IsReached(transform.position, cellBasedPoint, reachDistance))
                 {
                     currentWaypoint++;
                     if (currentWaypoint >= path.vectorPath.Count)
@@ -113,7 +162,6 @@ namespace AI
             Vector3 flatPoint = point, flatPostion = target;
             flatPostion.y = 0;
             flatPoint.y = 0;
-
             if ((flatPoint - flatPostion).sqrMagnitude < inputSize * inputSize)
             {
                 return true;

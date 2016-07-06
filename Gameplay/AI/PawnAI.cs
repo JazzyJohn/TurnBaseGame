@@ -34,9 +34,9 @@ namespace AI
             navigationService.StartPath(selectedCell);
         }
 
-        public void StartMoveOnPath()
+        public void StartMoveOnPath(bool isRun)
         {
-            actionService.StartMoveOnPath();
+            actionService.StartMoveOnPath(isRun);
         }
         public void NewTurn()
         {
@@ -81,6 +81,11 @@ namespace AI
         public ParamsService GetParamsService()
         {
             return paramsService;
+        }
+
+        public virtual bool CouldRun()
+        {
+            return actionService.CouldRun();
         }
     }
 }

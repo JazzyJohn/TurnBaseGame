@@ -173,11 +173,11 @@ namespace Grid
 
         public static void CalcualteAllFromV3(Vector3 position, out int column, out int row, out int h)
         {
-
+            float lCellSize =  s_instance.cellSize;
             Vector3 localPosition = position - s_instance.startPosition;
-            column = (int)Mathf.Floor(localPosition.x);
-            row = (int)Mathf.Floor(localPosition.z);
-            h = (int)Mathf.Floor(localPosition.y);
+            column = (int)Mathf.Floor(localPosition.x / lCellSize);
+            row = (int)Mathf.Floor(localPosition.z / lCellSize);
+            h = (int)Mathf.Floor(localPosition.y / lCellSize);
 
         }
 
@@ -241,8 +241,8 @@ namespace Grid
         }
         private Vector3 _NormalizeV3(Vector3 pos)
         {
-
-            return new Vector3(Mathf.Floor(pos.x) + cellSize / 2, pos.y, Mathf.Floor(pos.z) + cellSize / 2);
+            Vector3 relativePos = pos - startPosition;
+            return startPosition + new Vector3(Mathf.Floor(relativePos.x / cellSize) + cellSize / 2, relativePos.y, Mathf.Floor(relativePos.z / cellSize) + cellSize / 2);
         }
 
     }
