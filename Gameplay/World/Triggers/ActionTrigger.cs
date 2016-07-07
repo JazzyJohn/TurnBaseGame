@@ -11,7 +11,7 @@ namespace World
             PawnAI pawnAi = other.GetComponent<PawnAI>();
             if(pawnAi != null)
             {
-                action.StartAction(pawnAi,other.gameObject);
+                action.StartAction(new Context(pawnAi,other.gameObject));
             }
         }
 

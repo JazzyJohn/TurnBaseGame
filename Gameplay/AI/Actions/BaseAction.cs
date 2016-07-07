@@ -7,20 +7,32 @@ namespace AI
     public class ActionData
     {
         public BaseAction waiterForAi;
-        public GameObject lastGo;
+        public Context context;
         public ActionData()
         {
 
         }
 
     }
+    public class Context
+    {
+        public Context(PawnAI pawnAI, GameObject go)
+        {
+            this.pawnAI = pawnAI;
+            this.go = go;
+        }
+        public PawnAI pawnAI;
+        public GameObject go;
+        public bool allowSwitchTarget;
+    }
     public class BaseAction : MonoBehaviour
     {
+        public bool switchTarget = false;
         public virtual void ActionsEnd(PawnAI pawnAI)
         {
         }
 
-        public virtual void StartAction(PawnAI pawnAI, GameObject go)
+        public virtual void StartAction(Context context)
         {
         }
 

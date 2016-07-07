@@ -13,16 +13,16 @@ namespace AI
         {
             return new ActionSequenceData();
         }
-        public override void StartAction(PawnAI pawnAI, GameObject go)
+        public override void StartAction(Context context)
         {
 
-            ActionSequenceData data = pawnAI.CreateOrAquireData<ActionSequenceData>(CreateData);
+            ActionSequenceData data = context.pawnAI.CreateOrAquireData<ActionSequenceData>(CreateData);
             if(data == null)
             {
                 return;
             }
-            data.lastGo = go;
-            DoAction(pawnAI, go, data);
+            data.context = context;
+            DoAction(context, data);
 
         }
         public override bool CheckTarget(Descriptor.ActorDescriptor actorDescr)
@@ -52,7 +52,7 @@ namespace AI
             }
             actions[data.currentIndex].FinishAction(aiEvent, pawnAI);
             data.currentIndex++;
-            DoAction(pawnAI, data.lastGo, data);
+            DoAction(data.context, data);
 
 
         }
@@ -60,13 +60,13 @@ namespace AI
         {
             return true;
         }
-        private void DoAction(PawnAI pawnAI, GameObject go, ActionSequenceData data)
+        private void DoAction(Context context, ActionSequenceData data)
         {
             while (data.currentIndex < actions.Length )
             {
-                if (ShouldDoAction(data.currentIndex, pawnAI, go))
+                if (ShouldDoAction(data.currentIndex, context.pawnAI, context.go))
                 {
-                    actions[data.currentIndex].StartAction(pawnAI, go);
+                    actions[data.currentIndex].StartAction(context);
                     Debug.Log(data.currentIndex + " " + actions[data.currentIndex]);
                     if (!actions[data.currentIndex].IsOneFrameAction())
                         break;
@@ -77,11 +77,11 @@ namespace AI
 
             if (data.currentIndex >= actions.Length)
             {
-                pawnAI.ClearOfAnyData();
+                context.pawnAI.ClearOfAnyData();
             }
             else
             {
-                pawnAI.AddActionCallback(this);
+                context.pawnAI.AddActionCallback(this);
             }
         }
     }

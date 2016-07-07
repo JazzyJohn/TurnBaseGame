@@ -2,6 +2,7 @@
 using System.Collections;
 using Grid;
 using AI;
+using Descriptor;
 
 namespace PawnLogic
 {
@@ -16,6 +17,7 @@ namespace PawnLogic
         public const string TURNING_ANGLE = "turning angle";
         public const string FORWARD_SPEED = "forward speed";
         public const string TAKE_COVER = "cover";
+        public const string ON_GROUND = "OnGround";
         public const float MIN_ANGLE = 2.0f;
         Cell position;
         public State[] states;
@@ -28,6 +30,7 @@ namespace PawnLogic
         State currentState;
         PawnAI pawnAI;
         Animator animator;
+        ActorDescriptor actorDescriptor;
         [HideInInspector]
         public Transform myTransform;
         void Awake()
@@ -37,6 +40,7 @@ namespace PawnLogic
             pawnAI.Init(this);
             animator = GetComponent<Animator>();
             myTransform = transform;
+            actorDescriptor = GetComponent<ActorDescriptor>();
         }
         public void Start()
         {
@@ -112,6 +116,7 @@ namespace PawnLogic
                 position.Leave(this);
                 position = newCell;
                 position.Enter(this);
+                pawnAI.CellChanged();
             }
         }
 
@@ -137,8 +142,19 @@ namespace PawnLogic
 
         public void StartDeath()
         {
-            Debug.Log("I'm DEAD");
-            Destroy(gameObject);
+            Debug.Log("I'm DEAD" + gameObject.name);
+            animator.SetBool(TAKE_COVER, true);
+            Destroy(gameObject, 10.0f);
+        }
+
+        public void Jump()
+        {
+            animator.SetBool(ON_GROUND, false);
+        }
+
+        public ActorDescriptor GetActorDescriptor()
+        {
+            return actorDescriptor;
         }
     }
 }

@@ -7,10 +7,22 @@ namespace AI
     {
         public CharacterParam param;
         public float amount;
+        
 
-        public override void StartAction(PawnAI pawnAI, GameObject go)
+        public override void StartAction(Context context)
         {
-            pawnAI.ChangeParam(param, amount);
+            if (context.allowSwitchTarget && switchTarget)
+            {
+                PawnAI pawnAi = context.go.GetComponent<PawnAI>();
+                if( pawnAi != null)
+                {
+                    pawnAi.ChangeParam(param, amount);
+                }
+            }
+            else
+            {
+                context.pawnAI.ChangeParam(param, amount);
+            }
         }
         
     }

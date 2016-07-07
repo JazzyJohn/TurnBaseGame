@@ -6,9 +6,9 @@ namespace AI
 {
     public class TakeCover : BaseAction
     {
-        public override void StartAction(PawnAI pawnAI, GameObject go)
+        public override void StartAction(Context context)
         {
-            pawnAI.GetOwner().DoCover();
+            context.pawnAI.GetOwner().DoCover();
         }
 
         public override bool CheckTarget(ActorDescriptor actorDsecr)

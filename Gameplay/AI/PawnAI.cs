@@ -15,6 +15,7 @@ namespace AI
         NavigationService navigationService;
         ActionService actionService;
         ParamsService paramsService;
+        PerceptionService perceptionService;
         public void Init(Pawn owner)
         {
             this.owner = owner;
@@ -23,6 +24,8 @@ namespace AI
             actionService = GetComponent<ActionService>();
             actionService.Init(owner);
             paramsService = GetComponent<ParamsService>();
+            perceptionService = GetComponent<PerceptionService>();
+
         }
 
         public override bool CanMove()
@@ -33,6 +36,10 @@ namespace AI
         {
             navigationService.StartPath(selectedCell);
         }
+        public void CancelNavigation()
+        {
+            navigationService.CancelNavigation();
+        }
 
         public void StartMoveOnPath(bool isRun)
         {
@@ -41,6 +48,7 @@ namespace AI
         public void NewTurn()
         {
             actionService.NewTurn();
+            perceptionService.UpdateDetectList();
         }
 
         public void EndTurn()
@@ -86,6 +94,18 @@ namespace AI
         public virtual bool CouldRun()
         {
             return actionService.CouldRun();
+        }
+
+        public void CellChanged()
+        {
+            perceptionService.UpdateDetectList();
+            //TODO: UpdateDetectList of other Characters;
+            SendMessage("OnCellChanged", SendMessageOptions.DontRequireReceiver);
+        }
+
+        public PerceptionService GetPerceptionService()
+        {
+            return perceptionService;
         }
     }
 }

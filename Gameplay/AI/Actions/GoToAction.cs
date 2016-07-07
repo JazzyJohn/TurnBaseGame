@@ -6,9 +6,9 @@ namespace AI
     public class GoToAction : ActionWithDuration
     {
 
-        public override void StartAction(PawnAI pawnAI, GameObject go)
+        public override void StartAction(Context context)
         {
-            pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(go.transform.position));
+            context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(context.go.transform.position));
         }
 
         public override bool CheckTarget(Descriptor.ActorDescriptor actorDsecr)

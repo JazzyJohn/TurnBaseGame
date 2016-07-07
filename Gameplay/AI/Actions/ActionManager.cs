@@ -40,7 +40,7 @@ namespace AI
 
             if (all_actions[i].CheckTarget(descrt))
             {
-                all_actions[i].StartAction(pawn.GetAI(), target);
+                all_actions[i].StartAction(new Context(pawn.GetAI(), target));
             }
 
         }
