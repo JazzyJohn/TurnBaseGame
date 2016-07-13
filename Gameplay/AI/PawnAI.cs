@@ -16,6 +16,7 @@ namespace AI
         ActionService actionService;
         ParamsService paramsService;
         PerceptionService perceptionService;
+        EventHandler eventHandler;
         public void Init(Pawn owner)
         {
             this.owner = owner;
@@ -25,6 +26,7 @@ namespace AI
             actionService.Init(owner);
             paramsService = GetComponent<ParamsService>();
             perceptionService = GetComponent<PerceptionService>();
+            eventHandler = GetComponent<EventHandler>();
 
         }
 
@@ -32,9 +34,9 @@ namespace AI
         {
             return actionService.CanMove();
         }
-        public override void MoveTo(Grid.Cell selectedCell)
+        public override void MoveTo(Grid.Cell selectedCell, float overridedReachDistance = 0)
         {
-            navigationService.StartPath(selectedCell);
+            navigationService.StartPath(selectedCell, overridedReachDistance);
         }
         public void CancelNavigation()
         {
@@ -106,6 +108,26 @@ namespace AI
         public PerceptionService GetPerceptionService()
         {
             return perceptionService;
+        }
+
+        public void StartDeath()
+        {
+            perceptionService.enabled = false;
+            navigationService.CancelNavigation();
+            navigationService.enabled = false;
+            paramsService.enabled = false;
+            actionService.enabled = false;
+            if(eventHandler != null)
+            {
+                GamePlayEvent gameplayEvent = new GamePlayEvent(gameObject, EventType.Kill);
+                gameplayEvent.victim = gameObject;
+                eventHandler.SendEvent(gameplayEvent);
+            }
+        }
+
+        public EventHandler GetEventHandler()
+        {
+            return eventHandler;
         }
     }
 }

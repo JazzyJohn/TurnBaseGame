@@ -5,10 +5,11 @@ namespace AI
 {
     public class GoToAction : ActionWithDuration
     {
+        public float reachDistance;
 
         public override void StartAction(Context context)
         {
-            context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(context.go.transform.position));
+            context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(context.go.transform.position), reachDistance);
         }
 
         public override bool CheckTarget(Descriptor.ActorDescriptor actorDsecr)

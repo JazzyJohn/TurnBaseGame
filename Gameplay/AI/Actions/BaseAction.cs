@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Descriptor;
+using System.Collections.Generic;
 
 namespace AI
 {
@@ -23,7 +24,18 @@ namespace AI
         }
         public PawnAI pawnAI;
         public GameObject go;
+        List<GameObject> additionalObjects;
         public bool allowSwitchTarget;
+        public void AddToAdditional(GameObject go)
+        {
+            if (additionalObjects == null)
+                additionalObjects = new List<GameObject>();
+            additionalObjects.Remove(go);
+        }
+        public List<GameObject> GetAdditional()
+        {
+            return additionalObjects;
+        }
     }
     public class BaseAction : MonoBehaviour
     {

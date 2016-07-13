@@ -23,6 +23,7 @@ namespace AI
         float desiredSpeed;
         Pawn owner;
         public const float REACH_DISTANCE = 0.1f;
+        public float overridedReachDistance = 0.0f;
         // Use this for initialization
         public void Start()
         {
@@ -72,7 +73,7 @@ namespace AI
         }
 
 
-        public void StartPath(Grid.Cell targetCell)
+        public void StartPath(Grid.Cell targetCell, float overridedReachDistance = 0)
         {
             Vector3 target = GridController.GetV3FromCell(targetCell);
             if ((pathTarget - target).sqrMagnitude < 0.25f)
@@ -85,6 +86,8 @@ namespace AI
                 waitForPath = true;
                 pathComplete = false;
                 seeker.StartPath(owner.myTransform.position, target, OnPathComplete);
+               
+                this.overridedReachDistance = overridedReachDistance;
             }
         }
       
@@ -93,6 +96,7 @@ namespace AI
             path = null;
             pathComplete = false;
             waitForPath = false;
+            overridedReachDistance = 0.0f;
         }
         protected void FixedUpdate()
         {
@@ -106,7 +110,16 @@ namespace AI
                 float reachDistance;
                 if (currentWaypoint == path.vectorPath.Count - 1)
                 {
-                    reachDistance = REACH_DISTANCE;
+
+                    if (overridedReachDistance == 0.0f)
+                    {
+                       reachDistance = REACH_DISTANCE;
+                    }
+                    else
+                    {
+                        reachDistance = overridedReachDistance;
+                    }
+
                 }
                 else
                 {

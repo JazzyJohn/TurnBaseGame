@@ -88,7 +88,6 @@ namespace PawnLogic
             }
             else
             {
-                Debug.Log(Mathf.Abs(speed - tempLerpSpeed) + " " + Mathf.Epsilon);
                 if (Mathf.Abs(speed - tempLerpSpeed) > Mathf.Epsilon)
                 {
                     speedTime += Time.fixedDeltaTime;
@@ -144,6 +143,7 @@ namespace PawnLogic
         {
             Debug.Log("I'm DEAD" + gameObject.name);
             animator.SetBool(TAKE_COVER, true);
+            pawnAI.StartDeath();
             Destroy(gameObject, 10.0f);
         }
 

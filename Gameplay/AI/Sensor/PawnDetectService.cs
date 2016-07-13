@@ -29,6 +29,7 @@ namespace AI
             {
                 Context context = new Context(pawnAI, guards[0].gameObject);
                 context.allowSwitchTarget = true;
+                Debug.Log(actionToStart);
                 actionToStart.StartAction(context);
             }
         }

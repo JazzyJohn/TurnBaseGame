@@ -11,7 +11,7 @@ namespace AI
             return false;
         }
 
-        public virtual void MoveTo(Grid.Cell selectedCell)
+        public virtual void MoveTo(Grid.Cell selectedCell, float overridedReachDistance = 0)
         {
          
         }

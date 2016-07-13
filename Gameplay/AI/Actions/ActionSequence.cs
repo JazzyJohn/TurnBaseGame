@@ -19,6 +19,7 @@ namespace AI
             ActionSequenceData data = context.pawnAI.CreateOrAquireData<ActionSequenceData>(CreateData);
             if(data == null)
             {
+                Debug.Log("No Data for Sequence");
                 return;
             }
             data.context = context;
@@ -67,7 +68,6 @@ namespace AI
                 if (ShouldDoAction(data.currentIndex, context.pawnAI, context.go))
                 {
                     actions[data.currentIndex].StartAction(context);
-                    Debug.Log(data.currentIndex + " " + actions[data.currentIndex]);
                     if (!actions[data.currentIndex].IsOneFrameAction())
                         break;
                 }        
