@@ -8,7 +8,7 @@ namespace AI
     {
         LockDoorOpen,
         Kill,
-
+        SeeAgent
     }
     public class GamePlayEvent
     {
@@ -29,12 +29,36 @@ namespace AI
         Witness
     }
     [System.Serializable]
+    public abstract class ReactionFilter:ScriptableObject
+    {
+        public bool negative;
+        public abstract bool CheckFilter(PawnAI pawnAI);
+    }
+    [System.Serializable]
     public class EventReaction
     {
         public EventType type;
         public ReciverType reciverType;
         public BaseAction action;
- 
+        public ReactionFilter[] filters;
+
+
+        public bool IsPassFilter(PawnAI pawnAi)
+        {
+            if(filters == null || filters.Length ==0)
+            {
+                return true;
+            }
+            foreach(ReactionFilter filter in filters)
+            {
+                if(!filter.CheckFilter(pawnAi))
+                {
+                    return false;
+                }
+            }
+            return true;
+
+        }
     }
     public class EventHandler : MonoBehaviour
     {
@@ -50,6 +74,7 @@ namespace AI
 
         void ReciveEvent(GamePlayEvent gameplayEvent)
         {
+            //Debug.Log("recived event" + gameplayEvent.type);
             ReciverType reciverType;
             if (gameplayEvent.victim == transform.gameObject)
                 reciverType = ReciverType.Victim;
@@ -58,17 +83,20 @@ namespace AI
             else
                 reciverType = ReciverType.Witness;
 
-            EventReaction reaction  = reactionList.Find(x => x.type == gameplayEvent.type && x.reciverType == reciverType);
+            EventReaction reaction  = reactionList.Find(x => x.type == gameplayEvent.type && x.reciverType == reciverType && x.IsPassFilter(pawnAi));
 
             if(reaction == null)
             {
+                Debug.Log("Event has no reaction");
                 return;
             }
-            if(perceptionService != null && !perceptionService.IsInPerception(gameplayEvent.originPosition,gameplayEvent.sender))
+            if(perceptionService != null && reciverType != ReciverType.Source &&!perceptionService.IsInPerception(gameplayEvent.originPosition,gameplayEvent.sender))
             {
+                Debug.Log("Event not in Perception");
                 return;
             }
 
+            
             Context context = new Context(pawnAi, gameplayEvent.sender);
             context.AddToAdditional(gameplayEvent.victim);
             context.allowSwitchTarget = EventManager.GetAllowSwitchInAction(gameplayEvent.type);

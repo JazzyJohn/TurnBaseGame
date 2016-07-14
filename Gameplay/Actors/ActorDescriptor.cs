@@ -8,5 +8,6 @@ namespace Descriptor
         public bool IsCover;
         public bool IsDestroyable;
         public bool IsGuard;
+        public bool IsAgent;
     }
 }

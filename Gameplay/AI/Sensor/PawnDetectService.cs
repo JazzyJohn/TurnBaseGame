@@ -9,6 +9,12 @@ namespace AI
     public class PawnDetectService : MonoBehaviour
     {
         public BaseAction actionToStart;
+        public DetectionType type;
+        public enum DetectionType
+        {
+            Guard,
+            Agent
+        }
 
         PawnAI pawnAI;
 
@@ -23,24 +29,39 @@ namespace AI
         }
         public void CheckForGuard()
         {
-            Predicate<DetectableObject> predicate = FindGuard;
+            Predicate<DetectableObject> predicate = null;
+           
+            switch(type)
+            {
+                case DetectionType.Agent:
+
+                    predicate = FindAgent;
+                    break;
+                case DetectionType.Guard:
+                    predicate = FindGuard;
+                    break;
+            }
+            
             List<DetectableObject> guards = pawnAI.GetPerceptionService().GetObjectsInPerception(predicate);
             if (guards.Count > 0)
             {
                 Context context = new Context(pawnAI, guards[0].gameObject);
                 context.allowSwitchTarget = true;
-                Debug.Log(actionToStart);
                 actionToStart.StartAction(context);
             }
         }
 
-        public void OnCellChanged()
+        public void Update()
         {
             CheckForGuard();
         }
         public static bool FindGuard(DetectableObject obj)
         {
             return obj.type == DetectableObject.TYPE.CHARACTER && obj.pawn.GetActorDescriptor().IsGuard;
+        }
+        public static bool FindAgent(DetectableObject obj)
+        {
+            return obj.type == DetectableObject.TYPE.CHARACTER && obj.pawn.GetActorDescriptor().IsAgent;
         }
     }
 

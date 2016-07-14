@@ -17,6 +17,7 @@ namespace AI
         ParamsService paramsService;
         PerceptionService perceptionService;
         EventHandler eventHandler;
+        MoodService moodService;
         public void Init(Pawn owner)
         {
             this.owner = owner;
@@ -27,6 +28,7 @@ namespace AI
             paramsService = GetComponent<ParamsService>();
             perceptionService = GetComponent<PerceptionService>();
             eventHandler = GetComponent<EventHandler>();
+            moodService = GetComponent<MoodService>();
 
         }
 
@@ -128,6 +130,21 @@ namespace AI
         public EventHandler GetEventHandler()
         {
             return eventHandler;
+        }
+        public Mood GetMood()
+        {
+            if (moodService == null)
+                return Mood.Neutral;
+            return moodService.GetMood();
+        }
+        public MoodService GetMoodService()
+        {
+            return moodService;
+        }
+
+        public void MoodChanged()
+        {
+            perceptionService.ResetPerceptionValue();
         }
     }
 }

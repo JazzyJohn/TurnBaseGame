@@ -13,22 +13,50 @@ namespace AI
         public float FOV;
         public bool SeeThroughWall;
         public LayerMask layerMask;
+        public Mood mood;
     }
     public class PerceptionService : MonoBehaviour
     {
         public PerceptionValue defaultPerception;
-        public Transform myTransform;
+        public List<PerceptionValue> moodPerceptions;
+        Transform myTransform;
+        PawnAI pawnAI;
 
         List<DetectableObject> detectedObjects = new List<DetectableObject>();
-        Stack<PerceptionValue> perceptions = new Stack<PerceptionValue>();
+        List<PerceptionValue> perceptions = new List<PerceptionValue>();
         // Use this for initialization
         void Start()
         {
-            perceptions.Push(defaultPerception);
+            pawnAI = GetComponent<PawnAI>();
+            if (pawnAI == null)
+                Debug.LogError("No AI for Perception");
+            PerceptionManager.AddPerceptionService(this);
+            perceptions.Add(GetForMood(Mood.Neutral));
+            Debug.Log(perceptions[0]);
             if(myTransform == null)
             {
                 myTransform = transform;
             }
+        }
+        PerceptionValue GetCurrentValue()
+        {
+            return perceptions[perceptions.Count - 1];
+        }
+        PerceptionValue GetForMood(Mood mood)
+        {
+            PerceptionValue perceptionValue = moodPerceptions.Find(x => x.mood == mood);
+            if(perceptionValue  == null)
+            {
+                if( perceptions.Count == 0)
+                {
+                    return defaultPerception;
+                }
+                else
+                {
+                    return GetCurrentValue();
+                }
+            }
+            return perceptionValue;
         }
 
         public List<DetectableObject> GetObjectsInPerception()
@@ -38,6 +66,7 @@ namespace AI
 
         public List<DetectableObject> GetObjectsInPerception(Predicate<DetectableObject> predictate)
         {
+            
             return detectedObjects.FindAll(predictate);
         }
 
@@ -46,6 +75,11 @@ namespace AI
             detectedObjects.Clear();
             foreach(DetectableObject obj in DetectableObject.allObjects)
             {
+                
+                if(obj.transform.root == myTransform.root)
+                {
+                    continue;
+                }
                 if(IsInPerception(obj))
                 {
                     detectedObjects.Add(obj);
@@ -57,11 +91,11 @@ namespace AI
 
         public bool IsInPerception(Vector3 position, GameObject go)
         {
-            return _IsInPerception(perceptions.Peek(), position, go);
+            return _IsInPerception(GetCurrentValue(), position, go);
         }
         public bool IsInPerception(DetectableObject go)
         {
-            return _IsInPerception(perceptions.Peek(), go.transform.root.position, go.gameObject);
+            return _IsInPerception(GetCurrentValue(), go.transform.root.position, go.gameObject);
         }
         private bool _IsInPerception(PerceptionValue perceptionValue, Vector3 position, GameObject go)
         {
@@ -111,5 +145,16 @@ namespace AI
 
         }
 
+
+        public void ResetPerceptionValue()
+        {
+            perceptions[0] = GetForMood(pawnAI.GetMood());
+        }
+
+        public void OnDrawGizmosSelected()
+        {
+            Gizmos.color = new Color(0, 1.0f, 0, 0.5f);
+            Gizmos.DrawSphere(myTransform.position, GetCurrentValue().maxDistance);
+        }
     }
 }

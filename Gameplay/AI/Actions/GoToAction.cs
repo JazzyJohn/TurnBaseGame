@@ -9,6 +9,7 @@ namespace AI
 
         public override void StartAction(Context context)
         {
+            
             context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(context.go.transform.position), reachDistance);
         }
 

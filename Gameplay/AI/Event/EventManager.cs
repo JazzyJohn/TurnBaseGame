@@ -30,6 +30,8 @@ namespace AI
         }
         public static float GetSpreadDistance(EventType type)
         {
+            if (!sInstance.eventAdditionalDataMap.ContainsKey(type))
+                return 0.0f;
             return sInstance.eventAdditionalDataMap[type].distance;
         }
 
@@ -37,6 +39,8 @@ namespace AI
 
         public static bool GetAllowSwitchInAction(EventType eventType)
         {
+            if (!sInstance.eventAdditionalDataMap.ContainsKey(eventType))
+                return true;
             return sInstance.eventAdditionalDataMap[eventType].allowSwitchTargetInAction;
         }
     }
