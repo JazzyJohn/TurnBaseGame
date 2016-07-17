@@ -156,5 +156,16 @@ namespace AI
             Gizmos.color = new Color(0, 1.0f, 0, 0.5f);
             Gizmos.DrawSphere(myTransform.position, GetCurrentValue().maxDistance);
         }
+
+        public void PushPerception(PerceptionValue perceptionValue)
+        {
+            perceptions.Add(perceptionValue);
+        }
+
+        public void ClearLastPushed()
+        {
+            if (perceptions.Count > 1)
+                perceptions.RemoveAt(perceptions.Count - 1);
+        }
     }
 }

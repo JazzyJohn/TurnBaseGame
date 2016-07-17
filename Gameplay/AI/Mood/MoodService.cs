@@ -22,7 +22,7 @@ namespace AI
                 Debug.LogError("No AI for MoodService");
             }
         }
-        Mood currentMood;
+        public Mood currentMood;
         // Use this for initialization
         public void SetMood(Mood newMood)
         {
@@ -33,6 +33,25 @@ namespace AI
         public Mood GetMood()
         {
             return currentMood;
+        }
+
+        public void LowerMood()
+        {
+            if(currentMood == Mood.Neutral)
+            {
+                return;
+            }
+            currentMood = (Mood)((int)currentMood - 1);
+            pawnAI.MoodChanged();
+        }
+        public void UpMood()
+        {
+            if (currentMood == Mood.Aggresive)
+            {
+                return;
+            }
+            currentMood = (Mood)((int)currentMood + 1);
+            pawnAI.MoodChanged();
         }
     }
 }

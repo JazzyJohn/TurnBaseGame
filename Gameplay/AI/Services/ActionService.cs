@@ -45,12 +45,17 @@ namespace AI
 
         public void ClearOfAnyData()
         {
+
             actionData = null;
         }
 
         public T CreateOrAquireData<T>(CreateNewData maker) where T: ActionData
         {
             if (actionData == null)
+            {
+                actionData = maker();
+            }
+            if( actionData as T == null)
             {
                 actionData = maker();
             }
@@ -69,11 +74,28 @@ namespace AI
 
         public void SendInfoForActions(AIEvent aIEvent)
         {
+           
             if (actionData!= null && actionData.waiterForAi.IsSuitableEvent(aIEvent, owner.GetAI()))
             {
                 BaseAction action =   actionData.waiterForAi;
                 actionData.waiterForAi = null;
-                action.FinishAction(aIEvent, owner.GetAI());
+                if(action.FinishAction(aIEvent, owner.GetAI()))
+                {
+                    switch(actionData.context.source)
+                    {
+                        case SourceOfAction.Event:
+                            Debug.Log("Event Finished");
+                            if(owner.GetAI().GetEventHandler()!= null)
+                            {
+                                owner.GetAI().GetEventHandler().ReactionEnded();
+                            }
+                            break;
+                        case SourceOfAction.UI:
+                            //TODO: Unfreeze UI
+                            break;
+                    }
+                }
+                actionData = null;
             }
           
         }

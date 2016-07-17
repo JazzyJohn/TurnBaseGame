@@ -13,9 +13,8 @@ namespace AI
         {
             return new ActionSequenceData();
         }
-        public override void StartAction(Context context)
+        protected override void _StartAction(Context context)
         {
-
             ActionSequenceData data = context.pawnAI.CreateOrAquireData<ActionSequenceData>(CreateData);
             if(data == null)
             {
@@ -23,7 +22,10 @@ namespace AI
                 return;
             }
             data.context = context;
-            DoAction(context, data);
+            if(DoAction(context, data))
+            {
+                context.pawnAI.ClearOfAnyData();
+            }
 
         }
         public override bool CheckTarget(Descriptor.ActorDescriptor actorDescr)
@@ -44,24 +46,35 @@ namespace AI
             }
             return actions[data.currentIndex].IsSuitableEvent(aIEvent, pawnAI);
         }
-        public override void FinishAction(AIEvent aiEvent, PawnAI pawnAI)
+        public override bool FinishAction(AIEvent aiEvent, PawnAI pawnAI)
         {
             ActionSequenceData data = pawnAI.CreateOrAquireData<ActionSequenceData>(CreateData);
             if (data == null)
             {
-                return;
+                return true;
             }
             actions[data.currentIndex].FinishAction(aiEvent, pawnAI);
             data.currentIndex++;
-            DoAction(data.context, data);
+            return DoAction(data.context, data);
 
 
+        }
+        public override bool IsOneFrameAction()
+        {
+            foreach(BaseAction action in actions)
+            {
+                if(!action.IsOneFrameAction())
+                {
+                    return false;
+                }
+            }
+            return true ;
         }
         public virtual bool ShouldDoAction(int index, PawnAI pawnAi, GameObject go)
         {
             return true;
         }
-        private void DoAction(Context context, ActionSequenceData data)
+        private bool DoAction(Context context, ActionSequenceData data)
         {
             while (data.currentIndex < actions.Length )
             {
@@ -74,15 +87,9 @@ namespace AI
 
                 data.currentIndex++;
             }
-
-            if (data.currentIndex >= actions.Length)
-            {
-                context.pawnAI.ClearOfAnyData();
-            }
-            else
-            {
-                context.pawnAI.AddActionCallback(this);
-            }
+            bool isFinished = data.currentIndex >= actions.Length;
+     
+            return isFinished;
         }
     }
 }

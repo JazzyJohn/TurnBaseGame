@@ -45,6 +45,7 @@ namespace PawnLogic
         public void Start()
         {
             position = GridController.GetCellFromCoord(myTransform.position);
+            position.Enter(this);
             myTransform.position = GridController.GetV3FromCell(position);
         }
         public void PlayState(State state)

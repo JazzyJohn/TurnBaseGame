@@ -7,9 +7,9 @@ namespace AI
     {
         public CharacterParam param;
         public float amount;
-        
 
-        public override void StartAction(Context context)
+
+        protected override void _StartAction(Context context)
         {
             if (context.allowSwitchTarget && switchTarget)
             {

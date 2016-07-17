@@ -21,9 +21,14 @@ namespace AI
 
         private void _DoAction(int i, GameObject target, Pawn pawn)
         {
-            if (target == null || pawn == null)
+            if (target == null )
             {
                 Debug.Log("Target Is Null During Actions");
+                return;
+            }
+            if ( pawn == null)
+            {
+                Debug.Log("Pawn Is Null During Actions");
                 return;
             }
             ActorDescriptor descrt = target.GetComponent<ActorDescriptor>();
@@ -44,6 +49,8 @@ namespace AI
             }
 
         }
+
+  
 
     }
 }

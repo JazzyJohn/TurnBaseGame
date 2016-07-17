@@ -35,6 +35,10 @@ namespace Grid
         {
             return gObjects;
         }
+        public List<Pawn> GetOccupants()
+        {
+            return ocupants;
+        }
     }
 
     public class GridController : MonoBehaviour

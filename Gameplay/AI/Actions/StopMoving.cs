@@ -5,7 +5,7 @@ namespace AI
 {
     public class StopMoving : BaseAction
     {
-        public override void StartAction(Context context)
+        protected override void _StartAction(Context context)
         {
             context.pawnAI.CancelNavigation();
         }

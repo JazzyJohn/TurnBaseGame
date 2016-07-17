@@ -17,6 +17,10 @@ namespace UI
         {
             InputManager.StartAction(0);
         }
+        public void DoSmallTalk()
+        {
+            InputManager.StartAction(1);
+        }
         
     }
 }

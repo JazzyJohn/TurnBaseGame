@@ -5,7 +5,7 @@ namespace AI
     public class ChangeMood : BaseAction
     {
         public Mood mood;
-        public override void StartAction(Context context)
+        protected override void _StartAction(Context context)
         {
             MoodService moodService = null;
             if(context.allowSwitchTarget && switchTarget)

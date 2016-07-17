@@ -7,7 +7,7 @@ namespace AI
     {
         public EventType type;
 
-        public override void StartAction(Context context)
+        protected override void _StartAction(Context context)
         {
             EventHandler eventHandler = context.pawnAI.GetEventHandler();
             if(eventHandler == null)

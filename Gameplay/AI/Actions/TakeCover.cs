@@ -6,7 +6,7 @@ namespace AI
 {
     public class TakeCover : BaseAction
     {
-        public override void StartAction(Context context)
+        protected override void _StartAction(Context context)
         {
             context.pawnAI.GetOwner().DoCover();
         }

@@ -28,6 +28,13 @@ namespace AI
         Source,
         Witness
     }
+    public enum ReactionPriority
+    {
+        None,
+        Investigate,
+        Fight,
+        Flee
+    }
     [System.Serializable]
     public abstract class ReactionFilter:ScriptableObject
     {
@@ -41,8 +48,8 @@ namespace AI
         public ReciverType reciverType;
         public BaseAction action;
         public ReactionFilter[] filters;
-
-
+        public ReactionPriority priority;
+        public bool canInterruptedSamePriority;
         public bool IsPassFilter(PawnAI pawnAi)
         {
             if(filters == null || filters.Length ==0)
@@ -65,6 +72,8 @@ namespace AI
         public List<EventReaction> reactionList;
         PawnAI pawnAi;
         PerceptionService perceptionService;
+        public ReactionPriority currentReactionPriority = ReactionPriority.None;
+        EventReaction currentReaction;
 
         void Start()
         {
@@ -85,22 +94,52 @@ namespace AI
 
             EventReaction reaction  = reactionList.Find(x => x.type == gameplayEvent.type && x.reciverType == reciverType && x.IsPassFilter(pawnAi));
 
+            
             if(reaction == null)
             {
-                Debug.Log("Event has no reaction");
                 return;
             }
+
+            if ((int)reaction.priority < (int)currentReactionPriority || (reaction.priority == currentReactionPriority && !reaction.canInterruptedSamePriority))
+            { 
+                Debug.Log("Event has lower priority");
+                return;
+            }
+
+
             if(perceptionService != null && reciverType != ReciverType.Source &&!perceptionService.IsInPerception(gameplayEvent.originPosition,gameplayEvent.sender))
             {
                 Debug.Log("Event not in Perception");
                 return;
             }
-
+            Context context = null;
+            switch(reciverType)
+            {
+                case ReciverType.Victim:
+                    context = new Context(pawnAi, gameplayEvent.sender);
+                    break;
+                case ReciverType.Source:
+                    context = new Context(pawnAi, gameplayEvent.victim);
+                    break;
+                case ReciverType.Witness:
+                    context = new Context(pawnAi, gameplayEvent.victim);
+                    context.AddToAdditional(gameplayEvent.sender);
+                    break;
+                default: 
+                    context = new Context(pawnAi, gameplayEvent.sender);
+                    break;
+            }
+          
             
-            Context context = new Context(pawnAi, gameplayEvent.sender);
-            context.AddToAdditional(gameplayEvent.victim);
+            context.source = SourceOfAction.Event;
             context.allowSwitchTarget = EventManager.GetAllowSwitchInAction(gameplayEvent.type);
             reaction.action.StartAction(context);
+            if(!reaction.action.IsOneFrameAction())
+            {
+                currentReactionPriority = reaction.priority;
+                currentReaction = reaction;
+            }
+
         }
        
 
@@ -136,7 +175,13 @@ namespace AI
                 }
             }
         }
-     
+
+
+        public void ReactionEnded()
+        {
+            currentReaction = null;
+            currentReactionPriority = ReactionPriority.None;
+        }
     }
 
 }

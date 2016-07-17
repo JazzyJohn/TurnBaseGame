@@ -145,6 +145,27 @@ namespace AI
         public void MoodChanged()
         {
             perceptionService.ResetPerceptionValue();
+            //TODO REWORK:
+            perceptionService.ClearLastPushed();
+        }
+
+        public void LowerMood()
+        {
+            if (moodService == null)
+                return;
+            moodService.LowerMood();
+        }
+
+        public void UpMood()
+        {
+            if (moodService == null)
+                return;
+            moodService.UpMood();
+        }
+
+        public void PushPerception(PerceptionValue perceptionValue)
+        {
+            perceptionService.PushPerception(perceptionValue);
         }
     }
 }

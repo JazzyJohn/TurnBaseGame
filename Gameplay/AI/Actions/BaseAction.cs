@@ -15,6 +15,13 @@ namespace AI
         }
 
     }
+    public enum SourceOfAction
+    {
+        Nospecified,
+        UI,
+        Event,
+
+    }
     public class Context
     {
         public Context(PawnAI pawnAI, GameObject go)
@@ -26,6 +33,7 @@ namespace AI
         public GameObject go;
         List<GameObject> additionalObjects;
         public bool allowSwitchTarget;
+        public SourceOfAction source = SourceOfAction.Nospecified;
         public void AddToAdditional(GameObject go)
         {
             if (additionalObjects == null)
@@ -44,7 +52,25 @@ namespace AI
         {
         }
 
-        public virtual void StartAction(Context context)
+        public void StartAction(Context context)
+        {
+            _StartAction(context);
+            if(!IsOneFrameAction())
+            {
+                
+                ActionService.CreateNewData maker = delegate()
+                {
+                    ActionData actionData = new ActionData();                   
+                    return actionData;
+                };
+                ActionData data = context.pawnAI.CreateOrAquireData<ActionData>(maker);
+                Debug.Log("newly create data" + data);
+                data.context = context;
+                context.pawnAI.AddActionCallback(this);
+            }            
+        }
+
+        protected virtual void _StartAction(Context context)
         {
         }
 
@@ -59,8 +85,9 @@ namespace AI
         }
 
 
-        public virtual void FinishAction(AIEvent aIEvent, PawnAI pawnAI)
-        {           
+        public virtual bool FinishAction(AIEvent aIEvent, PawnAI pawnAI)
+        {
+            return true;
         }
 
         public virtual bool IsSuitableEvent(AIEvent aIEvent, PawnAI pawnAI)

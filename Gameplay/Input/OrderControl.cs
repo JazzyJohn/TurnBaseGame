@@ -91,6 +91,11 @@ namespace InputLogic
                 {
                     target = selectedCell.GetObjects()[0];
                 }
+                
+                if (selectedCell.GetOccupants().Count > 0)
+                {
+                    target = selectedCell.GetOccupants()[0].gameObject;
+                }
                 ActionManager.DoAction(nextAction, target, selectedPawn);
                 nextAction = -1;
             }
