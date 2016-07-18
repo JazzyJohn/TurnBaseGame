@@ -78,6 +78,7 @@ namespace AI
             Vector3 target = GridController.GetV3FromCell(targetCell);
             if ((pathTarget - target).sqrMagnitude < 0.25f)
             {
+                Debug.Log("No need of path");
                 return;
             }
             if (!waitForPath)
@@ -153,6 +154,10 @@ namespace AI
             else
             {
                 owner.StopMove();
+                if (!waitForPath)
+                {
+                    owner.GetAI().NavigationComplited();
+                }
             }
 
         }

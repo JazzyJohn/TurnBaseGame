@@ -70,7 +70,7 @@ namespace AI
             }
             return true ;
         }
-        public virtual bool ShouldDoAction(int index, PawnAI pawnAi, GameObject go)
+        public virtual bool ShouldDoAction(int index, Context context)
         {
             return true;
         }
@@ -78,7 +78,7 @@ namespace AI
         {
             while (data.currentIndex < actions.Length )
             {
-                if (ShouldDoAction(data.currentIndex, context.pawnAI, context.go))
+                if (ShouldDoAction(data.currentIndex, context))
                 {
                     actions[data.currentIndex].StartAction(context);
                     if (!actions[data.currentIndex].IsOneFrameAction())

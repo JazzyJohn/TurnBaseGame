@@ -121,9 +121,9 @@ namespace AI
             actionService.enabled = false;
             if(eventHandler != null)
             {
-                GamePlayEvent gameplayEvent = new GamePlayEvent(gameObject, EventType.Kill);
+                GamePlayEvent gameplayEvent = new GamePlayEvent(gameObject, GamePlayEventType.Kill);
                 gameplayEvent.victim = gameObject;
-                eventHandler.SendEvent(gameplayEvent);
+                EventHandler.SendEvent(gameplayEvent);
             }
         }
 
@@ -166,6 +166,11 @@ namespace AI
         public void PushPerception(PerceptionValue perceptionValue)
         {
             perceptionService.PushPerception(perceptionValue);
+        }
+
+        public void StartTalk()
+        {
+            owner.StartTalk();
         }
     }
 }

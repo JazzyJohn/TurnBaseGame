@@ -21,6 +21,14 @@ namespace UI
         {
             InputManager.StartAction(1);
         }
+        public void DoOpenDoor()
+        {
+            InputManager.StartAction(2);
+        }
+        public void DoUnlockDoor()
+        {
+            InputManager.StartAction(3);
+        }
         
     }
 }

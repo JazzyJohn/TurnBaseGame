@@ -5,7 +5,7 @@ namespace AI
 {
     public class SendEvent : BaseAction
     {
-        public EventType type;
+        public GamePlayEventType type;
 
         protected override void _StartAction(Context context)
         {
@@ -16,7 +16,7 @@ namespace AI
             }
             GamePlayEvent gameplayEvent = new GamePlayEvent(context.pawnAI.gameObject, type);
             gameplayEvent.victim = context.go;
-            eventHandler.SendEvent(gameplayEvent);
+            EventHandler.SendEvent(gameplayEvent);
         }
     }
 }

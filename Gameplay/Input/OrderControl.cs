@@ -134,5 +134,17 @@ namespace InputLogic
             nextAction = i;
          
         }
+
+        internal void RightClick()
+        {
+            if(nextAction == -1)
+            {
+                selectedPawn = null;
+            }
+            else
+            {
+                nextAction = -1;
+            }
+        }
     }
 }

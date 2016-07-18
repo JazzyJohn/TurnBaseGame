@@ -16,7 +16,7 @@ namespace AI
                 return;
             }
             float dice = Random.Range(0,100);
-            Debug.Log(dice + " in small talk");
+
             if( dice < percentOfSuccsess)
             {
                
@@ -28,6 +28,8 @@ namespace AI
                 {
                     pawnAi.PushPerception(perceptionValue);
                 }
+                pawnAi.StartTalk();
+                context.pawnAI.StartTalk();
             }
             else
             {

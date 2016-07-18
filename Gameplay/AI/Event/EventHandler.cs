@@ -4,22 +4,23 @@ using System.Collections.Generic;
 
 namespace AI
 {
-    public enum EventType
+    public enum GamePlayEventType
     {
         LockDoorOpen,
+        LockDoorTryingToOpen,
         Kill,
         SeeAgent
     }
     public class GamePlayEvent
     {
-        public EventType type;
+        public GamePlayEventType type;
         public GameObject sender;
         public GameObject victim;
         public Vector3 originPosition;
-        public GamePlayEvent(GameObject gameObject, EventType type)
+        public GamePlayEvent(GameObject sender, GamePlayEventType type)
         {
             this.type = type;
-            this.sender = gameObject;
+            this.sender = sender;
         }
     }
     public enum ReciverType
@@ -44,7 +45,7 @@ namespace AI
     [System.Serializable]
     public class EventReaction
     {
-        public EventType type;
+        public GamePlayEventType type;
         public ReciverType reciverType;
         public BaseAction action;
         public ReactionFilter[] filters;
@@ -94,6 +95,7 @@ namespace AI
 
             EventReaction reaction  = reactionList.Find(x => x.type == gameplayEvent.type && x.reciverType == reciverType && x.IsPassFilter(pawnAi));
 
+            Debug.Log(reciverType + " " + gameplayEvent +" " + reaction);
             
             if(reaction == null)
             {
@@ -147,7 +149,7 @@ namespace AI
         {
             ReciveEvent(gameplayEvent);
         }
-        public void SendEvent(GamePlayEvent gameplayEvent)
+        public static void SendEvent(GamePlayEvent gameplayEvent)
         {
             gameplayEvent.originPosition = gameplayEvent.sender.transform.position;
             gameplayEvent.sender.SendMessage("HandleGamePlayEvent", gameplayEvent,SendMessageOptions.DontRequireReceiver);

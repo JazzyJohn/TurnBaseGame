@@ -9,9 +9,9 @@ namespace AI.Conditions
         public CharacterParam param;
 
 
-        protected override bool _CheckAI(PawnAI AI, GameObject target)
+        protected override bool _CheckAI(Context context)
         {
-            return CompareNumbers(AI.GetParamsService().GetValue(param));            
+            return CompareNumbers(context.pawnAI.GetParamsService().GetValue(param));            
         }
     }
 

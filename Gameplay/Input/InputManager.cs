@@ -41,6 +41,10 @@ namespace InputLogic
             {
                 orderControl.Click();
             }
+            if (Input.GetMouseButtonDown(1) && !IsMouseOverUI())
+            {
+                orderControl.RightClick();
+            }
         }
 
         void CalculateCameraMove()

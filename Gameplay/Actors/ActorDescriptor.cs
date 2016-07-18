@@ -9,5 +9,6 @@ namespace Descriptor
         public bool IsDestroyable;
         public bool IsGuard;
         public bool IsAgent;
+        public bool IsInteractable;
     }
 }

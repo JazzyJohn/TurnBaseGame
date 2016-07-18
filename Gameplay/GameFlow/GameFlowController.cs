@@ -2,6 +2,7 @@
 using System.Collections;
 using PawnLogic;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 namespace GameFlow
 {
     public class GameFlowController : MonoBehaviour
@@ -36,6 +37,15 @@ namespace GameFlow
             {
                 pawn.GetAI().NewTurn();
             }
+        }
+        public static void FinishLevel()
+        {
+            s_instance._FinishLevel();
+        }
+        private void _FinishLevel()
+        {
+            Debug.Log("levelFinished");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 }

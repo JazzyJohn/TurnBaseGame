@@ -64,7 +64,6 @@ namespace AI
                     return actionData;
                 };
                 ActionData data = context.pawnAI.CreateOrAquireData<ActionData>(maker);
-                Debug.Log("newly create data" + data);
                 data.context = context;
                 context.pawnAI.AddActionCallback(this);
             }            

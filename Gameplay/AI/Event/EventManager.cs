@@ -7,7 +7,7 @@ namespace AI
     [System.Serializable]
     public class EventAdditionalData
     {
-        public EventType type;
+        public GamePlayEventType type;
 
         public float distance;
 
@@ -17,7 +17,7 @@ namespace AI
     {
         public EventAdditionalData[] eventAdditionalData;
 
-        Dictionary<EventType, EventAdditionalData> eventAdditionalDataMap = new Dictionary<EventType, EventAdditionalData>();
+        Dictionary<GamePlayEventType, EventAdditionalData> eventAdditionalDataMap = new Dictionary<GamePlayEventType, EventAdditionalData>();
 
         static EventManager sInstance;
         void Awake()
@@ -28,7 +28,7 @@ namespace AI
             }
             sInstance = this;
         }
-        public static float GetSpreadDistance(EventType type)
+        public static float GetSpreadDistance(GamePlayEventType type)
         {
             if (!sInstance.eventAdditionalDataMap.ContainsKey(type))
                 return 0.0f;
@@ -37,7 +37,7 @@ namespace AI
 
 
 
-        public static bool GetAllowSwitchInAction(EventType eventType)
+        public static bool GetAllowSwitchInAction(GamePlayEventType eventType)
         {
             if (!sInstance.eventAdditionalDataMap.ContainsKey(eventType))
                 return true;

@@ -145,7 +145,7 @@ namespace PawnLogic
             Debug.Log("I'm DEAD" + gameObject.name);
             animator.SetBool(TAKE_COVER, true);
             pawnAI.StartDeath();
-            Destroy(gameObject, 10.0f);
+            Destroy(gameObject, 1.0f);
         }
 
         public void Jump()
@@ -156,6 +156,11 @@ namespace PawnLogic
         public ActorDescriptor GetActorDescriptor()
         {
             return actorDescriptor;
+        }
+
+        public void StartTalk()
+        {
+            animator.SetBool(TAKE_COVER, true);
         }
     }
 }
