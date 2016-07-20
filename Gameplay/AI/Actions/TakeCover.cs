@@ -11,9 +11,9 @@ namespace AI
             context.pawnAI.GetOwner().DoCover();
         }
 
-        public override bool CheckTarget(ActorDescriptor actorDsecr)
+        public override bool CheckTarget(ActorDescriptor actorDescr)
         {
-            return actorDsecr.IsCover;
+            return actorDescr.IsCover && base.CheckTarget(actorDescr);
         }
     }
 

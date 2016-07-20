@@ -38,7 +38,7 @@ namespace AI
                 myTransform = transform;
             }
         }
-        PerceptionValue GetCurrentValue()
+        public PerceptionValue GetCurrentValue()
         {
             return perceptions[perceptions.Count - 1];
         }

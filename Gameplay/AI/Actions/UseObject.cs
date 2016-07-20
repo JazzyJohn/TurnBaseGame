@@ -17,7 +17,7 @@ namespace AI
 
         public override bool CheckTarget(ActorDescriptor actorDescr)
         {
-            return actorDescr.IsInteractable;
+            return actorDescr.IsInteractable && base.CheckTarget(actorDescr);
         }
         
     }

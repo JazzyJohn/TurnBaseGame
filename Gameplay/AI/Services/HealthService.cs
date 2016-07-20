@@ -18,18 +18,30 @@ namespace AI
                 return;
             }
 
-            paramService.SetParam(CharacterParam.Health, maxHealth);
-            paramService.SetParam(CharacterParam.MaxHealth, maxHealth);
+            paramService.SetValue(CharacterParam.Health, maxHealth);
+            paramService.SetValue(CharacterParam.MaxHealth, maxHealth);
         }
         
-
-        // Update is called once per frame
-        void Update()
-        {
+        void ForceUpdateParam()
+        { 
             if(paramService.GetValue(CharacterParam.Health)<=0.0f)
             {
                 owner.StartDeath();
             }
+            if(paramService.GetValue(CharacterParam.Health) > paramService.GetValue(CharacterParam.MaxHealth))
+            {
+                paramService.SetValue(CharacterParam.Health, paramService.GetValue(CharacterParam.MaxHealth));
+            }
+
+        }
+        public bool IsMaxHealth()
+        {
+            return paramService.GetValue(CharacterParam.Health) < paramService.GetValue(CharacterParam.MaxHealth);
+        }
+        // Update is called once per frame
+        void Update()
+        {
+            ForceUpdateParam();
         }
     }
 }

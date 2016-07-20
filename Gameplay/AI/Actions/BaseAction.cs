@@ -2,6 +2,7 @@
 using System.Collections;
 using Descriptor;
 using System.Collections.Generic;
+using AI.Conditions;
 
 namespace AI
 {
@@ -32,7 +33,7 @@ namespace AI
         public PawnAI pawnAI;
         public GameObject go;
         List<GameObject> additionalObjects;
-        public bool allowSwitchTarget;
+        public bool allowSwitchTarget = true;
         public SourceOfAction source = SourceOfAction.Nospecified;
         public void AddToAdditional(GameObject go)
         {
@@ -48,6 +49,8 @@ namespace AI
     public class BaseAction : MonoBehaviour
     {
         public bool switchTarget = false;
+
+        public TargetCondition condition;
         public virtual void ActionsEnd(PawnAI pawnAI)
         {
         }
@@ -80,7 +83,7 @@ namespace AI
 
         public virtual bool CheckTarget(ActorDescriptor actorDescr)
         {
-            return false;
+            return true && ( condition == null || condition.Check(actorDescr));
         }
 
 

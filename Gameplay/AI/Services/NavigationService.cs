@@ -35,8 +35,8 @@ namespace AI
                 Debug.LogError("No ParamsService or No Seeker");
                 enabled = false;
             }
-            paramService.SetParam(CharacterParam.NormalMovment_Distance, NormalDistance);
-            paramService.SetParam(CharacterParam.RunMovment_Distance, RunDistance);
+            paramService.SetValue(CharacterParam.NormalMovment_Distance, NormalDistance);
+            paramService.SetValue(CharacterParam.RunMovment_Distance, RunDistance);
         }
 
         public void OnPathComplete(Path p)

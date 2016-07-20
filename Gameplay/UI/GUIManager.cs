@@ -29,6 +29,10 @@ namespace UI
         {
             InputManager.StartAction(3);
         }
+        public void DoHeal()
+        {
+            InputManager.StartAction(4);
+        }
         
     }
 }

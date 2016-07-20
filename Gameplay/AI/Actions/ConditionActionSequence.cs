@@ -17,7 +17,7 @@ namespace AI
                 if (!action.CheckTarget(actorDescr) && conditions[index] == null)
                     return false;
             }
-            return true;
+            return base.CheckTarget(actorDescr);
         }
 
         public override bool ShouldDoAction(int index, Context context)

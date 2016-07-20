@@ -13,10 +13,7 @@ namespace AI
             context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(context.go.transform.position), reachDistance);
         }
 
-        public override bool CheckTarget(Descriptor.ActorDescriptor actorDsecr)
-        {
-            return true;
-        }
+       
         public override bool IsSuitableEvent(AIEvent aIEvent, PawnAI pawnAI)
         {
             if(aIEvent == AIEvent.NavigationComplited)

@@ -35,7 +35,7 @@ namespace AI
                 if (!action.CheckTarget(actorDescr))
                     return false;
             }
-            return true;
+            return base.CheckTarget(actorDescr);
         }
         public override bool IsSuitableEvent(AIEvent aIEvent, PawnAI pawnAI)
         {

@@ -8,10 +8,20 @@ namespace AI
         NavigationComplited,
         Invalid
     }
+    public enum TalkType
+    {
+        SIMPLE_RESPONDER = 0,
+        SIMPLE_REQUESTER = 1
 
+    }
+    public struct AIAdditionalData
+    {
+        public Vector3 directionOfLastDamage;
+    }
     public class PawnAI : BaseAI
     {
         Pawn owner;
+        AIAdditionalData addData = new AIAdditionalData();
         NavigationService navigationService;
         ActionService actionService;
         ParamsService paramsService;
@@ -85,9 +95,34 @@ namespace AI
             actionService.SendInfoForActions(AIEvent.NavigationComplited);
         }
 
-        public void ChangeParam(CharacterParam param, float amount)
+        public void ChangeParam(CharacterParam param, float amount, PawnAI pawnAI = null)
         {
-            paramsService.SetParam(param, paramsService.GetValue(param) + amount);
+            paramsService.SetValue(param, paramsService.GetValue(param) + amount);
+            SendMessage("ForceUpdateParam", SendMessageOptions.DontRequireReceiver);
+            DoSomeAdditionalLogicAbout(param, amount, pawnAI);
+        }
+
+        private void DoSomeAdditionalLogicAbout(CharacterParam param, float amount, PawnAI pawnAI)
+        {
+
+            switch(param)
+            {
+                case CharacterParam.Health:
+                    if(amount < 0)
+                    {
+                        if (pawnAI == null)
+                            addData.directionOfLastDamage = transform.forward;
+                        else
+                            addData.directionOfLastDamage = (transform.position - pawnAI.transform.position).normalized;
+
+                        owner.PlayHurt();
+                    }
+                    else
+                    {
+                        owner.StartHealAnim();
+                    }
+                    break;
+            }
         }
 
         public ParamsService GetParamsService()
@@ -147,6 +182,7 @@ namespace AI
             perceptionService.ResetPerceptionValue();
             //TODO REWORK:
             perceptionService.ClearLastPushed();
+            owner.SetMood(GetMood());
         }
 
         public void LowerMood()
@@ -168,9 +204,14 @@ namespace AI
             perceptionService.PushPerception(perceptionValue);
         }
 
-        public void StartTalk()
+        public void StartTalk(TalkType talkType)
         {
-            owner.StartTalk();
+            owner.StartTalk(talkType);
         }
+        public AIAdditionalData GetAIAddData()
+        {
+            return addData;
+        }
+   
     }
 }

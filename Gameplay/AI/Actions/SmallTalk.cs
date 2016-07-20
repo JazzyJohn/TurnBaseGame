@@ -28,8 +28,8 @@ namespace AI
                 {
                     pawnAi.PushPerception(perceptionValue);
                 }
-                pawnAi.StartTalk();
-                context.pawnAI.StartTalk();
+                pawnAi.StartTalk(TalkType.SIMPLE_RESPONDER);
+                context.pawnAI.StartTalk(TalkType.SIMPLE_REQUESTER);
             }
             else
             {
@@ -41,9 +41,9 @@ namespace AI
             }
             
         }
-        public override bool CheckTarget(ActorDescriptor actorDsecr)
+        public override bool CheckTarget(ActorDescriptor actorDescr)
         {
-            return actorDsecr.IsGuard;
+            return actorDescr.IsGuard && base.CheckTarget(actorDescr);
         }
 
        

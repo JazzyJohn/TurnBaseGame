@@ -16,7 +16,7 @@ namespace AI
                 PawnAI pawnAi = context.go.GetComponent<PawnAI>();
                 if( pawnAi != null)
                 {
-                    pawnAi.ChangeParam(param, amount);
+                    pawnAi.ChangeParam(param, amount, context.pawnAI);
                 }
             }
             else

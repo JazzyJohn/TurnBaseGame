@@ -24,7 +24,7 @@ namespace AI
             }
             return 0.0f;
         }
-        public void SetParam(CharacterParam param, float value)
+        public void SetValue(CharacterParam param, float value)
         {
             all_params[param] = value;
         }
