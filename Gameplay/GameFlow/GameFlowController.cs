@@ -3,6 +3,7 @@ using System.Collections;
 using PawnLogic;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UI;
 namespace GameFlow
 {
     public class GameFlowController : MonoBehaviour
@@ -14,9 +15,9 @@ namespace GameFlow
         }
 
         List<Pawn> all_pawns = new List<Pawn>();
-        public  void Start()
+        public void Start()
         {
-            all_pawns.AddRange(FindObjectsOfType<Pawn>());
+           
         }
         public static void EndTurn()
         {
@@ -25,11 +26,17 @@ namespace GameFlow
 
         private void _EndTurn()
         {
+            all_pawns.Clear();
+            all_pawns.AddRange(FindObjectsOfType<Pawn>());
             foreach(Pawn pawn in all_pawns)
             {
-                pawn.GetAI().EndTurn();
+                if(!pawn.GetAI().EndTurn())
+                {
+                    return;
+                }
             }
             _NextTurn();
+            
         }
         private void _NextTurn()
         {
@@ -37,6 +44,7 @@ namespace GameFlow
             {
                 pawn.GetAI().NewTurn();
             }
+            GUIManager.NewTurn();
         }
         public static void FinishLevel()
         {

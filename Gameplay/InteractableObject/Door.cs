@@ -29,6 +29,7 @@ namespace Interaction
             {
                 GamePlayEvent gameplayEvent = new GamePlayEvent(gameObject, GamePlayEventType.LockDoorOpen);
                 gameplayEvent.victim = opener.gameObject;
+                gameplayEvent.originPosition = opener.gameObject.transform.position;
                 EventHandler.SendEvent(gameplayEvent);
                 locked = false;
             }
@@ -36,6 +37,7 @@ namespace Interaction
             {
                 GamePlayEvent gameplayEvent = new GamePlayEvent(gameObject, GamePlayEventType.LockDoorTryingToOpen);
                 gameplayEvent.victim = opener.gameObject;
+                gameplayEvent.originPosition = opener.gameObject.transform.position;
                 EventHandler.SendEvent(gameplayEvent);
             }
         }

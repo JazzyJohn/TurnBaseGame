@@ -5,6 +5,7 @@ using Grid;
 using AI;
 using Pathfinding;
 using System.Collections.Generic;
+using Descriptor;
 namespace InputLogic
 {
     public class OrderControl : MonoBehaviour
@@ -32,7 +33,7 @@ namespace InputLogic
         
         void UpdateSelectionPath()
         {
-            if(selectedPawn != null)
+            if (CouldComandSelected())
             {
                 Vector3 target = GridController.GetV3FromCell(GridController.GetSelectedCell());
                 if ((pathTarget - target).sqrMagnitude < 0.25f && !newSelection)
@@ -46,6 +47,11 @@ namespace InputLogic
                 seeker.StartPath(GridController.GetV3FromCell(selectedPawn.GetPosition()), target, OnPathComplete);
             
                 
+            }
+            else
+            {
+                path = null;
+                pathRenderer.enabled = false;
             }
         }
 
@@ -64,10 +70,12 @@ namespace InputLogic
         }
         void UpdateDrawPath()
         {
-            if(path == null)
+            if (path == null )
             {
+                
                 return;
             }
+           
             pathRenderer.enabled = true;
 
             pathRenderer.SetVertexCount(path.vectorPath.Count);
@@ -84,7 +92,10 @@ namespace InputLogic
             Cell selectedCell = GridController.GetSelectedCell();
             if (nextAction!=-1)
             {
-
+                if(!CouldComandSelected())
+                {
+                    return;
+                }
                 List<GameObject> gObjects = selectedCell.GetObjects();
                 GameObject target = null;
                 if (selectedCell.GetObjects().Count > 0)
@@ -118,10 +129,9 @@ namespace InputLogic
                     }
                 }
                 else
-                {
-                    Debug.Log("Goto" + selectedCell);
+                {                   
                     BaseAI baseAI = selectedPawn.GetAI();
-                    if (selectedCell != selectedPawn.GetPosition() && baseAI.CanMove())
+                    if (CouldComandSelected() && selectedCell != selectedPawn.GetPosition() && baseAI.CanMove())
                     {
                         baseAI.MoveTo(selectedCell);
                     }
@@ -129,10 +139,18 @@ namespace InputLogic
             }
           
         }
+        public bool CouldComandSelected()
+        {
+            return selectedPawn != null && selectedPawn.GetComponent<ActorDescriptor>().IsAgent;
+        }
         public void DoAction(int i)
         {
             nextAction = i;
          
+        }
+        public int SelecetedAction()
+        {
+            return nextAction;
         }
 
         internal void RightClick()
@@ -145,6 +163,11 @@ namespace InputLogic
             {
                 nextAction = -1;
             }
+        }
+
+        public Pawn SelectedPawn()
+        {
+            return selectedPawn;
         }
     }
 }

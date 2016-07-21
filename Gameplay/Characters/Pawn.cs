@@ -25,6 +25,7 @@ namespace PawnLogic
         public const string TALK = "Talk";
         public const string TALK_TYPE = "TalkType";
         public const string MOOD = "mood";
+        public const string START_UNLOCKING = "UnlockDoor";
         public enum DeathDirection
         {
             Back = 0,
@@ -82,6 +83,8 @@ namespace PawnLogic
             {
                 return;
             }
+            direction.Normalize();
+            direction.y = 0;
             float angle = GetAngleToForward(direction);
             if (Mathf.Sign(angle) != Mathf.Sign(cacheAngle) || Mathf.Abs(angle) > Mathf.Abs(cacheAngle))
             {
@@ -223,6 +226,11 @@ namespace PawnLogic
         public void SetMood(Mood mood)
         {
             animator.SetInteger(MOOD, (int)mood);
+        }
+
+        public void PlayUnlockDoor()
+        {
+            animator.SetTrigger(START_UNLOCKING);
         }
     }
 }

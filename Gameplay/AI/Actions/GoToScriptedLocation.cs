@@ -11,8 +11,8 @@ namespace AI
         protected override void _StartAction(Context context)
         {
             if(target != null)
-            {                
-                context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(target.transform.position), reachDistance);
+            {
+                context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(target.transform.position), reachDistance, context.madeForUrgentPoints);
             }
         }
 

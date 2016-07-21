@@ -6,6 +6,7 @@ namespace AI
     public enum AIEvent
     {
         NavigationComplited,
+        AnimationFinished,
         Invalid
     }
     public enum TalkType
@@ -46,9 +47,9 @@ namespace AI
         {
             return actionService.CanMove();
         }
-        public override void MoveTo(Grid.Cell selectedCell, float overridedReachDistance = 0)
+        public override void MoveTo(Grid.Cell selectedCell, float overridedReachDistance = 0, bool freeAction = false)
         {
-            navigationService.StartPath(selectedCell, overridedReachDistance);
+            navigationService.StartPath(selectedCell, overridedReachDistance, freeAction);
         }
         public void CancelNavigation()
         {
@@ -65,9 +66,15 @@ namespace AI
             perceptionService.UpdateDetectList();
         }
 
-        public void EndTurn()
+        public bool EndTurn()
         {
-           
+            
+            if(!eventHandler.EndTurn())
+            {
+                return false;
+            }
+            //TODO: Do awesome ai stuff if have no reaction;
+            return true;
         }
 
         public Pawn GetOwner()
@@ -203,15 +210,15 @@ namespace AI
         {
             perceptionService.PushPerception(perceptionValue);
         }
-
-        public void StartTalk(TalkType talkType)
-        {
-            owner.StartTalk(talkType);
-        }
+      
         public AIAdditionalData GetAIAddData()
         {
             return addData;
         }
-   
+
+        public void AnimationFinished()
+        {
+            actionService.SendInfoForActions(AIEvent.AnimationFinished);
+        }
     }
 }

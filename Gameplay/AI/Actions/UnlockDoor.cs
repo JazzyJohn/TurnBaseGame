@@ -5,16 +5,12 @@ using Descriptor;
 
 namespace AI
 {
-    public class UnlockDoor : BaseAction
+    public class UnlockDoor : AnimatedAction
     {
 
         protected override void _StartAction(Context context)
         {
-            Door interactableObject = context.go.GetComponent<Door>();
-
-            float dice = Random.Range(0, 100);
-            Debug.Log("Trying to open Door:" + dice);
-            interactableObject.TryUnlock(dice, context.pawnAI);
+            context.pawnAI.GetOwner().PlayUnlockDoor();
         }
 
         public override bool CheckTarget(ActorDescriptor actorDescr)
@@ -22,7 +18,24 @@ namespace AI
             Door interactableObject = actorDescr.GetComponent<Door>();
             return actorDescr.IsInteractable && interactableObject.locked;
         }
-        
+
+        public override bool FinishAction(AIEvent aIEvent, PawnAI pawnAI)
+        {
+            ActionData data = pawnAI.CreateOrAquireData<ActionData>(maker);
+            if(data == null)
+            {
+                Debug.LogError("No data for UnlockDoor:" + this);
+                return true;
+            }
+
+            Door interactableObject = data.context.go.GetComponent<Door>();
+
+            float dice = Random.Range(0, 100);
+            Debug.Log("Trying to open Door:" + dice);
+            interactableObject.TryUnlock(dice, data.context.pawnAI);
+            return true;
+            
+        }
     }
 
 }

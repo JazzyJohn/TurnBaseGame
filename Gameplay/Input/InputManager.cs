@@ -112,7 +112,10 @@ namespace InputLogic
         {
             s_instance.orderControl.DoAction(p);
         }
-
+        public static int SelecetedAction()
+        {
+            return s_instance.orderControl.SelecetedAction();
+        }
         public bool IsMouseOverUI()
         {
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
@@ -121,6 +124,11 @@ namespace InputLogic
                 return true;
             }
             return false;
+        }
+
+        public static PawnLogic.Pawn GetSelectedPawn()
+        {
+            return s_instance.orderControl.SelectedPawn();
         }
     }
 }

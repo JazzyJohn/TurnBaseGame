@@ -16,7 +16,7 @@ namespace AI
         public GamePlayEventType type;
         public GameObject sender;
         public GameObject victim;
-        public Vector3 originPosition;
+        public Vector3 originPosition  = Vector3.zero;
         public GamePlayEvent(GameObject sender, GamePlayEventType type)
         {
             this.type = type;
@@ -51,6 +51,7 @@ namespace AI
         public ReactionFilter[] filters;
         public ReactionPriority priority;
         public bool canInterruptedSamePriority;
+        public int urgentPointCost;
         public bool IsPassFilter(PawnAI pawnAi)
         {
             if(filters == null || filters.Length ==0)
@@ -67,19 +68,27 @@ namespace AI
             return true;
 
         }
+        public bool CanInteraptReaction(ReactionPriority currentReactionPriority)
+        {
+            return (int)priority < (int)currentReactionPriority || (priority == currentReactionPriority && !canInterruptedSamePriority);
+        }
     }
     public class EventHandler : MonoBehaviour
     {
         public List<EventReaction> reactionList;
         PawnAI pawnAi;
         PerceptionService perceptionService;
+        ActionService actionService;
         public ReactionPriority currentReactionPriority = ReactionPriority.None;
         EventReaction currentReaction;
-
+        EventReaction delayedReaction;
+        Context delayContext;
+        bool doingDelayed;
         void Start()
         {
             pawnAi = GetComponent<PawnAI>();
             perceptionService = GetComponent<PerceptionService>();
+            actionService = GetComponent<ActionService>();
         }
 
         void ReciveEvent(GamePlayEvent gameplayEvent)
@@ -95,14 +104,13 @@ namespace AI
 
             EventReaction reaction  = reactionList.Find(x => x.type == gameplayEvent.type && x.reciverType == reciverType && x.IsPassFilter(pawnAi));
 
-            Debug.Log(reciverType + " " + gameplayEvent +" " + reaction);
             
             if(reaction == null)
             {
                 return;
             }
 
-            if ((int)reaction.priority < (int)currentReactionPriority || (reaction.priority == currentReactionPriority && !reaction.canInterruptedSamePriority))
+            if (reaction.CanInteraptReaction(currentReactionPriority))
             { 
                 Debug.Log("Event has lower priority");
                 return;
@@ -114,8 +122,24 @@ namespace AI
                 Debug.Log("Event not in Perception");
                 return;
             }
+
+
+            if (actionService.GetAmountOfUrgentPoints() < reaction.urgentPointCost && (delayedReaction == null || reaction.CanInteraptReaction(delayedReaction.priority)))
+            {
+                delayedReaction = reaction;
+                delayContext = CreateContext(reciverType, gameplayEvent);
+                return;
+            }
+
+            actionService.ReduceUrgentPoints(reaction.urgentPointCost);
+
+            StartReacton(reaction, CreateContext(reciverType, gameplayEvent));
+
+        }
+        Context CreateContext(ReciverType reciverType, GamePlayEvent gameplayEvent)
+        {
             Context context = null;
-            switch(reciverType)
+            switch (reciverType)
             {
                 case ReciverType.Victim:
                     context = new Context(pawnAi, gameplayEvent.sender);
@@ -127,23 +151,31 @@ namespace AI
                     context = new Context(pawnAi, gameplayEvent.victim);
                     context.AddToAdditional(gameplayEvent.sender);
                     break;
-                default: 
+                default:
                     context = new Context(pawnAi, gameplayEvent.sender);
                     break;
             }
-          
-            
+
+
             context.source = SourceOfAction.Event;
             context.allowSwitchTarget = EventManager.GetAllowSwitchInAction(gameplayEvent.type);
+            context.madeForUrgentPoints = true;
+
+            return context;
+           
+        }
+        bool StartReacton(EventReaction reaction, Context context)
+        {
+            Debug.Log(reaction + " " + context);
             reaction.action.StartAction(context);
-            if(!reaction.action.IsOneFrameAction())
+            if (!reaction.action.IsOneFrameAction())
             {
                 currentReactionPriority = reaction.priority;
                 currentReaction = reaction;
+                return true;
             }
-
+            return false;
         }
-       
 
         public void HandleGamePlayEvent(GamePlayEvent gameplayEvent)
         {
@@ -151,7 +183,10 @@ namespace AI
         }
         public static void SendEvent(GamePlayEvent gameplayEvent)
         {
-            gameplayEvent.originPosition = gameplayEvent.sender.transform.position;
+            if (gameplayEvent.originPosition == Vector3.zero)
+            {
+                gameplayEvent.originPosition = gameplayEvent.sender.transform.position;
+            }
             gameplayEvent.sender.SendMessage("HandleGamePlayEvent", gameplayEvent,SendMessageOptions.DontRequireReceiver);
             if(gameplayEvent.sender != gameplayEvent.victim)
                 gameplayEvent.victim.SendMessage("HandleGamePlayEvent", gameplayEvent, SendMessageOptions.DontRequireReceiver);
@@ -181,8 +216,38 @@ namespace AI
 
         public void ReactionEnded()
         {
+            if (doingDelayed)
+            {
+                delayedReaction = null;
+                delayContext = null;
+                GameFlow.GameFlowController.EndTurn();
+            }
             currentReaction = null;
             currentReactionPriority = ReactionPriority.None;
+        }
+
+        public bool EndTurn()
+        {
+            if (delayedReaction != null && StartReacton(delayedReaction, delayContext))
+            {
+                
+                doingDelayed = true;
+                return false;
+            }
+            return true;
+        }
+
+        public void ClearDelayReaction(ReactionPriority maxReactionPriority)
+        {
+            if(delayedReaction.priority <= maxReactionPriority)
+            {
+                delayedReaction = null;
+            }
+        }
+
+        public bool IsHaveDelayedReaction()
+        {
+            return delayedReaction != null;
         }
     }
 

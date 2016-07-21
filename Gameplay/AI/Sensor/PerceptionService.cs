@@ -107,11 +107,13 @@ namespace AI
             direction.y = 0;
             if (direction.sqrMagnitude > perceptionValue.maxDistance * perceptionValue.maxDistance)
             {
+                
                 return false;
             }
 
             if( Vector3.Angle(direction.normalized, myTransform.forward) >perceptionValue.FOV)
             {
+              
                 return false;
             }
 

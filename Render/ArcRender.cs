@@ -12,7 +12,6 @@ namespace Render
         public float angle_fov = 40;
         [HideInInspector]
         public float dist_min = 5.0f;
-        [HideInInspector]
         public float vertical_offset = 1.0f;
         [HideInInspector]
         public float dist_max = 15.0f;

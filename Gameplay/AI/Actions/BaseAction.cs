@@ -34,6 +34,7 @@ namespace AI
         public GameObject go;
         List<GameObject> additionalObjects;
         public bool allowSwitchTarget = true;
+        public bool madeForUrgentPoints = false;
         public SourceOfAction source = SourceOfAction.Nospecified;
         public void AddToAdditional(GameObject go)
         {
@@ -60,17 +61,17 @@ namespace AI
             _StartAction(context);
             if(!IsOneFrameAction())
             {
-                
-                ActionService.CreateNewData maker = delegate()
-                {
-                    ActionData actionData = new ActionData();                   
-                    return actionData;
-                };
+                              
                 ActionData data = context.pawnAI.CreateOrAquireData<ActionData>(maker);
                 data.context = context;
                 context.pawnAI.AddActionCallback(this);
             }            
         }
+        protected ActionService.CreateNewData maker = delegate()
+        {
+            ActionData actionData = new ActionData();
+            return actionData;
+        };
 
         protected virtual void _StartAction(Context context)
         {
@@ -102,6 +103,13 @@ namespace AI
         public override bool IsOneFrameAction()
         {
             return false;
+        }
+    }
+    public abstract class AnimatedAction : ActionWithDuration
+    {
+        public override bool IsSuitableEvent(AIEvent aIEvent, PawnAI pawnAI)
+        {
+            return aIEvent == AIEvent.AnimationFinished;
         }
     }
 }

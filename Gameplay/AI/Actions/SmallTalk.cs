@@ -28,8 +28,8 @@ namespace AI
                 {
                     pawnAi.PushPerception(perceptionValue);
                 }
-                pawnAi.StartTalk(TalkType.SIMPLE_RESPONDER);
-                context.pawnAI.StartTalk(TalkType.SIMPLE_REQUESTER);
+                pawnAi.GetOwner().StartTalk(TalkType.SIMPLE_RESPONDER);
+                context.pawnAI.GetOwner().StartTalk(TalkType.SIMPLE_REQUESTER);
             }
             else
             {

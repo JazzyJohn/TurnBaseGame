@@ -8,15 +8,17 @@ namespace AI
     {
         Pawn owner;
         public int startActionPoints = 2;
+        public int startUrgentActionPoint = 1;
         public ActionData actionData;
         public delegate ActionData CreateNewData();
         int actionPoints;
+        int urgentActionPoint;
         const int MOVE_COST = 1;
         const int RUN_COST = 2;
         public void Init(Pawn owner)
         {
             this.owner = owner;
-            actionPoints = startActionPoints;
+            NewTurn();
         }
 
         public bool CanMove()
@@ -41,6 +43,7 @@ namespace AI
         public void NewTurn()
         {
             actionPoints = startActionPoints;
+            urgentActionPoint = startUrgentActionPoint;
         }
 
         public void ClearOfAnyData()
@@ -74,9 +77,10 @@ namespace AI
 
         public void SendInfoForActions(AIEvent aIEvent)
         {
-           
+                     
             if (actionData!= null && actionData.waiterForAi.IsSuitableEvent(aIEvent, owner.GetAI()))
             {
+               
                 BaseAction action =   actionData.waiterForAi;
                 actionData.waiterForAi = null;
                 if(action.FinishAction(aIEvent, owner.GetAI()))
@@ -94,8 +98,9 @@ namespace AI
                             //TODO: Unfreeze UI
                             break;
                     }
+                    actionData = null;
                 }
-                actionData = null;
+                
             }
           
         }
@@ -104,6 +109,16 @@ namespace AI
         public bool CouldRun()
         {
             return actionPoints >= RUN_COST;
+        }
+
+        public int GetAmountOfUrgentPoints()
+        {
+            return urgentActionPoint;
+        }
+
+        public void ReduceUrgentPoints(int cost)
+        {
+            urgentActionPoint -= cost;
         }
     }
 }

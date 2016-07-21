@@ -17,6 +17,7 @@ namespace AI
         protected Path path;
         private int currentWaypoint = 0;
         bool waitForPath = false;
+        bool freeAction = false;
         protected bool pathComplete = false;
         public float cuttingEdgeDistance = 0.5f;
         Vector3 pathTarget;
@@ -73,7 +74,7 @@ namespace AI
         }
 
 
-        public void StartPath(Grid.Cell targetCell, float overridedReachDistance = 0)
+        public void StartPath(Grid.Cell targetCell, float overridedReachDistance = 0, bool freeAction = false)
         {
             Vector3 target = GridController.GetV3FromCell(targetCell);
             if ((pathTarget - target).sqrMagnitude < 0.25f)
@@ -83,6 +84,7 @@ namespace AI
             }
             if (!waitForPath)
             {
+                this.freeAction = freeAction;
                 pathTarget = target;
                 waitForPath = true;
                 pathComplete = false;

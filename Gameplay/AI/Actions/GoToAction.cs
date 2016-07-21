@@ -9,8 +9,7 @@ namespace AI
 
         protected override void _StartAction(Context context)
         {
-            Debug.Log(context.pawnAI + " goto " + context.go);
-            context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(context.go.transform.position), reachDistance);
+            context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(context.go.transform.position), reachDistance, context.madeForUrgentPoints);
         }
 
        

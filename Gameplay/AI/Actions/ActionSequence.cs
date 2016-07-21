@@ -51,9 +51,11 @@ namespace AI
             ActionSequenceData data = pawnAI.CreateOrAquireData<ActionSequenceData>(CreateData);
             if (data == null)
             {
+                Debug.LogError("No data for ActionSequence:" + this);
                 return true;
             }
             actions[data.currentIndex].FinishAction(aiEvent, pawnAI);
+            
             data.currentIndex++;
             return DoAction(data.context, data);
 
@@ -76,13 +78,18 @@ namespace AI
         }
         private bool DoAction(Context context, ActionSequenceData data)
         {
+
             while (data.currentIndex < actions.Length )
             {
+                
                 if (ShouldDoAction(data.currentIndex, context))
                 {
                     actions[data.currentIndex].StartAction(context);
                     if (!actions[data.currentIndex].IsOneFrameAction())
+                    {
+                        context.pawnAI.AddActionCallback(this);
                         break;
+                    }
                 }        
 
                 data.currentIndex++;
