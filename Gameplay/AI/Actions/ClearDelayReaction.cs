@@ -6,7 +6,7 @@ namespace AI
     public class ClearDelayReaction : BaseAction
     {
         public ReactionPriority maxReactionPriority;
-        protected override void _StartAction(Context context)
+        protected override bool DoAction(Context context)
         {
             EventHandler handler = null;
             if (context.allowSwitchTarget && switchTarget)
@@ -26,6 +26,7 @@ namespace AI
             {
                 handler.ClearDelayReaction(maxReactionPriority);
             }
+            return true;
         }
     }
 }

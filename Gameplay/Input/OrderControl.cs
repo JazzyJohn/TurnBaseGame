@@ -107,6 +107,7 @@ namespace InputLogic
                 {
                     target = selectedCell.GetOccupants()[0].gameObject;
                 }
+                selectedPawn.GetAI().SendInterruptEvent();
                 ActionManager.DoAction(nextAction, target, selectedPawn);
                 nextAction = -1;
             }
@@ -133,6 +134,7 @@ namespace InputLogic
                     BaseAI baseAI = selectedPawn.GetAI();
                     if (CouldComandSelected() && selectedCell != selectedPawn.GetPosition() && baseAI.CanMove())
                     {
+                        selectedPawn.GetAI().SendInterruptEvent();
                         baseAI.MoveTo(selectedCell);
                     }
                 }

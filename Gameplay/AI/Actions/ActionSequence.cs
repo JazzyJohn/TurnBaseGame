@@ -13,20 +13,22 @@ namespace AI
         {
             return new ActionSequenceData();
         }
-        protected override void _StartAction(Context context)
+        protected override bool DoAction(Context context)
         {
             ActionSequenceData data = context.pawnAI.CreateOrAquireData<ActionSequenceData>(CreateData);
             if(data == null)
             {
                 Debug.Log("No Data for Sequence");
-                return;
+                return true;
             }
             data.context = context;
-            if(DoAction(context, data))
+            if (_DoAction(context, data))
             {
-                context.pawnAI.ClearOfAnyData();
-            }
 
+                context.pawnAI.ClearOfAnyData();
+                return true;
+            }
+            return false;
         }
         public override bool CheckTarget(Descriptor.ActorDescriptor actorDescr)
         {
@@ -54,29 +56,20 @@ namespace AI
                 Debug.LogError("No data for ActionSequence:" + this);
                 return true;
             }
+            Debug.Log("Continue;" + pawnAI);
             actions[data.currentIndex].FinishAction(aiEvent, pawnAI);
             
             data.currentIndex++;
-            return DoAction(data.context, data);
+            return _DoAction(data.context, data);
 
 
         }
-        public override bool IsOneFrameAction()
-        {
-            foreach(BaseAction action in actions)
-            {
-                if(!action.IsOneFrameAction())
-                {
-                    return false;
-                }
-            }
-            return true ;
-        }
+      
         public virtual bool ShouldDoAction(int index, Context context)
         {
             return true;
         }
-        private bool DoAction(Context context, ActionSequenceData data)
+        private bool _DoAction(Context context, ActionSequenceData data)
         {
 
             while (data.currentIndex < actions.Length )
@@ -84,8 +77,8 @@ namespace AI
                 
                 if (ShouldDoAction(data.currentIndex, context))
                 {
-                    actions[data.currentIndex].StartAction(context);
-                    if (!actions[data.currentIndex].IsOneFrameAction())
+                    
+                    if (!actions[data.currentIndex].StartAction(context))
                     {
                         context.pawnAI.AddActionCallback(this);
                         break;

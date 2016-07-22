@@ -7,6 +7,9 @@ namespace AI
     {
         NavigationComplited,
         AnimationFinished,
+        InterruptEvent,      
+        DamageEvent,
+        ReactionEvent,
         Invalid
     }
     public enum TalkType
@@ -29,6 +32,7 @@ namespace AI
         PerceptionService perceptionService;
         EventHandler eventHandler;
         MoodService moodService;
+        EffectService effectService;
         public void Init(Pawn owner)
         {
             this.owner = owner;
@@ -40,7 +44,7 @@ namespace AI
             perceptionService = GetComponent<PerceptionService>();
             eventHandler = GetComponent<EventHandler>();
             moodService = GetComponent<MoodService>();
-
+            effectService = GetComponent<EffectService>();
         }
 
         public override bool CanMove()
@@ -64,6 +68,9 @@ namespace AI
         {
             actionService.NewTurn();
             perceptionService.UpdateDetectList();
+
+            if (effectService != null)
+                effectService.NewTurn();
         }
 
         public bool EndTurn()
@@ -101,6 +108,10 @@ namespace AI
         {
             actionService.SendInfoForActions(AIEvent.NavigationComplited);
         }
+        public void SendInterruptEvent()
+        {
+            actionService.SendInfoForActions(AIEvent.InterruptEvent);
+        }
 
         public void ChangeParam(CharacterParam param, float amount, PawnAI pawnAI = null)
         {
@@ -123,6 +134,7 @@ namespace AI
                             addData.directionOfLastDamage = (transform.position - pawnAI.transform.position).normalized;
 
                         owner.PlayHurt();
+                        actionService.SendInfoForActions(AIEvent.DamageEvent);
                     }
                     else
                     {
@@ -187,8 +199,6 @@ namespace AI
         public void MoodChanged()
         {
             perceptionService.ResetPerceptionValue();
-            //TODO REWORK:
-            perceptionService.ClearLastPushed();
             owner.SetMood(GetMood());
         }
 
@@ -219,6 +229,18 @@ namespace AI
         public void AnimationFinished()
         {
             actionService.SendInfoForActions(AIEvent.AnimationFinished);
+        }
+
+        public void RegisterEffect(BaseAction baseAction, Context context, int timeOfEffect)
+        {
+            if(effectService == null)
+                return;
+            effectService.RegisterEffect(baseAction, context, timeOfEffect);
+        }
+
+        public void PopPerception()
+        {
+            perceptionService.PopPerception();
         }
     }
 }

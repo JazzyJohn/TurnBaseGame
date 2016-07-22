@@ -9,7 +9,7 @@ namespace AI
     public class ActionData
     {
         public BaseAction waiterForAi;
-        public Context context;
+        public Context context;      
         public ActionData()
         {
 
@@ -36,15 +36,26 @@ namespace AI
         public bool allowSwitchTarget = true;
         public bool madeForUrgentPoints = false;
         public SourceOfAction source = SourceOfAction.Nospecified;
+        Dictionary<string, object> addData;
         public void AddToAdditional(GameObject go)
         {
             if (additionalObjects == null)
                 additionalObjects = new List<GameObject>();
-            additionalObjects.Remove(go);
+            additionalObjects.Add(go);
         }
         public List<GameObject> GetAdditional()
         {
             return additionalObjects;
+        }
+        public void AddToData(string key, object value)
+        {
+            if (addData == null)
+                addData = new Dictionary<string, object>();
+            addData[key] = value;
+        }
+        public object GetAddData(string key)
+        {
+            return addData[key];
         }
     }
     public class BaseAction : MonoBehaviour
@@ -56,16 +67,17 @@ namespace AI
         {
         }
 
-        public void StartAction(Context context)
+        public bool StartAction(Context context)
         {
-            _StartAction(context);
-            if(!IsOneFrameAction())
+            if (!DoAction(context))
             {
                               
                 ActionData data = context.pawnAI.CreateOrAquireData<ActionData>(maker);
                 data.context = context;
                 context.pawnAI.AddActionCallback(this);
-            }            
+                return false;
+            }
+            return true;
         }
         protected ActionService.CreateNewData maker = delegate()
         {
@@ -73,14 +85,12 @@ namespace AI
             return actionData;
         };
 
-        protected virtual void _StartAction(Context context)
-        {
-        }
-
-        public virtual bool IsOneFrameAction()
+        protected virtual bool DoAction(Context context)
         {
             return true;
         }
+
+
 
         public virtual bool CheckTarget(ActorDescriptor actorDescr)
         {
@@ -97,19 +107,42 @@ namespace AI
         {
             return true;
         }
-    }
-    public abstract class ActionWithDuration : BaseAction
-    {
-        public override bool IsOneFrameAction()
+
+        public virtual void Reverse(Context context)
         {
-            return false;
+            
         }
     }
-    public abstract class AnimatedAction : ActionWithDuration
+
+    public abstract class AnimatedAction : BaseAction
     {
         public override bool IsSuitableEvent(AIEvent aIEvent, PawnAI pawnAI)
         {
             return aIEvent == AIEvent.AnimationFinished;
+        }
+    }
+    public abstract class UntilInterruptAction : BaseAction
+    {
+        public enum InterruptionType
+        {
+            Default,
+            Damage,
+            Reaction
+        }
+        public InterruptionType interruptionType;
+        public override bool IsSuitableEvent(AIEvent aIEvent, PawnAI pawnAI)
+        {
+            switch(interruptionType)
+            {
+                case InterruptionType.Default:
+                    return aIEvent == AIEvent.InterruptEvent;                    
+                case InterruptionType.Damage:
+                    return  aIEvent == AIEvent.InterruptEvent || aIEvent == AIEvent.DamageEvent;
+                case InterruptionType.Reaction:
+                    return aIEvent == AIEvent.InterruptEvent || aIEvent == AIEvent.ReactionEvent;
+            }
+            return false;
+           
         }
     }
 }

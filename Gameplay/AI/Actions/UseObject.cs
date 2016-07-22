@@ -6,13 +6,15 @@ namespace AI
 {
     public class UseObject : BaseAction
     {
-        protected override void _StartAction(Context context)
+        protected override bool DoAction(Context context)
         {
 
             InteractableObject interactableObject = context.go.GetComponent<InteractableObject>();
            
             if (interactableObject != null)
                 interactableObject.Use();
+
+            return true;
         }
 
         public override bool CheckTarget(ActorDescriptor actorDescr)

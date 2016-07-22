@@ -19,6 +19,9 @@ namespace UI
         public Image delayEventIndicator;
         public Image selectionIndicater;
         public Color selectedColor;
+        public Image effectIndicator;
+        public EffectService effectService;
+        public Text timeOfEffect;
         Color notSelectedColor;
         Pawn owner;
         void Start()
@@ -55,6 +58,24 @@ namespace UI
                         delayEventIndicator.enabled = true;
                     else
                         delayEventIndicator.enabled = false;
+                }
+            }
+            if (effectService != null)
+            {
+                if (effectIndicator != null)
+                {
+                    int amountOfTime = effectService.AmountOfTimeOfClosestEffect();
+                    if (amountOfTime > 0)
+                    {
+                        effectIndicator.enabled = true;
+                        timeOfEffect.enabled = true;
+                        timeOfEffect.text = amountOfTime.ToString();
+                    }
+                    else
+                    {
+                        effectIndicator.enabled = false;
+                        timeOfEffect.enabled = false;
+                    }
                 }
             }
             if(InputManager.GetSelectedPawn() == owner)

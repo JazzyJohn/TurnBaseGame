@@ -48,7 +48,7 @@ namespace AI
 
         public void ClearOfAnyData()
         {
-
+            actionData.waiterForAi = null;
             actionData = null;
         }
 
@@ -74,35 +74,41 @@ namespace AI
             }
             actionData.waiterForAi = action;
         }
-
-        public void SendInfoForActions(AIEvent aIEvent)
+        public void ForceFinishAction()
         {
-                     
+            FinishAction(AIEvent.Invalid);
+            actionData = null;         
+        }
+        void FinishAction(AIEvent aIEvent)
+        {
+            BaseAction action = actionData.waiterForAi;
+            SourceOfAction source = actionData.context.source;  
+            actionData.waiterForAi = null;
+           
+            if (action.FinishAction(aIEvent, owner.GetAI()))
+            {
+                switch (source)
+                {
+                    case SourceOfAction.Event:
+                        Debug.Log("Event Finished");
+                        if (owner.GetAI().GetEventHandler() != null)
+                        {
+                            owner.GetAI().GetEventHandler().ReactionEnded();
+                        }
+                        break;
+                    case SourceOfAction.UI:
+                        //TODO: Unfreeze UI
+                        break;
+                }
+                actionData = null;
+            }
+        }
+        public void SendInfoForActions(AIEvent aIEvent)
+        {                   
             if (actionData!= null && actionData.waiterForAi.IsSuitableEvent(aIEvent, owner.GetAI()))
             {
-               
-                BaseAction action =   actionData.waiterForAi;
-                actionData.waiterForAi = null;
-                if(action.FinishAction(aIEvent, owner.GetAI()))
-                {
-                    switch(actionData.context.source)
-                    {
-                        case SourceOfAction.Event:
-                            Debug.Log("Event Finished");
-                            if(owner.GetAI().GetEventHandler()!= null)
-                            {
-                                owner.GetAI().GetEventHandler().ReactionEnded();
-                            }
-                            break;
-                        case SourceOfAction.UI:
-                            //TODO: Unfreeze UI
-                            break;
-                    }
-                    actionData = null;
-                }
-                
-            }
-          
+                FinishAction(aIEvent);
+            }          
         }
 
 
@@ -120,5 +126,7 @@ namespace AI
         {
             urgentActionPoint -= cost;
         }
+
+       
     }
 }

@@ -5,7 +5,7 @@ namespace AI
     public class ChangeMood : BaseAction
     {
         public Mood mood;
-        protected override void _StartAction(Context context)
+        protected override bool DoAction(Context context)
         {
             MoodService moodService = null;
             if(context.allowSwitchTarget && switchTarget)
@@ -25,6 +25,7 @@ namespace AI
               
                 moodService.SetMood(mood);
             }
+            return true;
         }
        
     }

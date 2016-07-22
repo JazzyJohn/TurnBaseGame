@@ -7,16 +7,17 @@ namespace AI
     {
         public GamePlayEventType type;
 
-        protected override void _StartAction(Context context)
+        protected override bool DoAction(Context context)
         {
             EventHandler eventHandler = context.pawnAI.GetEventHandler();
             if(eventHandler == null)
             {
-                return;
+                return true;
             }
             GamePlayEvent gameplayEvent = new GamePlayEvent(context.pawnAI.gameObject, type);
             gameplayEvent.victim = context.go;
             EventHandler.SendEvent(gameplayEvent);
+            return true;
         }
     }
 }

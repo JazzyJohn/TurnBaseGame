@@ -232,5 +232,10 @@ namespace PawnLogic
         {
             animator.SetTrigger(START_UNLOCKING);
         }
+
+        public void StopTalk()
+        {
+            animator.SetBool(TALK, false);
+        }
     }
 }

@@ -153,18 +153,12 @@ namespace AI
             perceptions[0] = GetForMood(pawnAI.GetMood());
         }
 
-        public void OnDrawGizmosSelected()
-        {
-            Gizmos.color = new Color(0, 1.0f, 0, 0.5f);
-            Gizmos.DrawSphere(myTransform.position, GetCurrentValue().maxDistance);
-        }
-
         public void PushPerception(PerceptionValue perceptionValue)
         {
             perceptions.Add(perceptionValue);
         }
 
-        public void ClearLastPushed()
+        public void PopPerception()
         {
             if (perceptions.Count > 1)
                 perceptions.RemoveAt(perceptions.Count - 1);

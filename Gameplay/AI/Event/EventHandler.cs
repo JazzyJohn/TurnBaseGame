@@ -133,6 +133,11 @@ namespace AI
 
             actionService.ReduceUrgentPoints(reaction.urgentPointCost);
 
+            actionService.SendInfoForActions(AIEvent.ReactionEvent);
+            if(currentReaction != null)
+            {
+                actionService.ForceFinishAction();
+            }
             StartReacton(reaction, CreateContext(reciverType, gameplayEvent));
 
         }
@@ -167,8 +172,8 @@ namespace AI
         bool StartReacton(EventReaction reaction, Context context)
         {
             Debug.Log(reaction + " " + context);
-            reaction.action.StartAction(context);
-            if (!reaction.action.IsOneFrameAction())
+           
+            if (!reaction.action.StartAction(context))
             {
                 currentReactionPriority = reaction.priority;
                 currentReaction = reaction;
@@ -239,7 +244,7 @@ namespace AI
 
         public void ClearDelayReaction(ReactionPriority maxReactionPriority)
         {
-            if(delayedReaction.priority <= maxReactionPriority)
+            if (delayedReaction != null && delayedReaction.priority <= maxReactionPriority)
             {
                 delayedReaction = null;
             }

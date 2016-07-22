@@ -3,13 +3,14 @@ using System.Collections;
 
 namespace AI
 {
-    public class GoToAction : ActionWithDuration
+    public class GoToAction : BaseAction
     {
         public float reachDistance;
 
-        protected override void _StartAction(Context context)
+        protected override bool DoAction(Context context)
         {
             context.pawnAI.MoveTo(Grid.GridController.GetCellFromCoord(context.go.transform.position), reachDistance, context.madeForUrgentPoints);
+            return false;
         }
 
        

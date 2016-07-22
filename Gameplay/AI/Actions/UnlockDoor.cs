@@ -8,9 +8,10 @@ namespace AI
     public class UnlockDoor : AnimatedAction
     {
 
-        protected override void _StartAction(Context context)
+        protected override bool DoAction(Context context)
         {
             context.pawnAI.GetOwner().PlayUnlockDoor();
+            return false;
         }
 
         public override bool CheckTarget(ActorDescriptor actorDescr)

@@ -9,7 +9,7 @@ namespace AI
         public float amount;
 
 
-        protected override void _StartAction(Context context)
+        protected override bool DoAction(Context context)
         {
             if (context.allowSwitchTarget && switchTarget)
             {
@@ -23,6 +23,7 @@ namespace AI
             {
                 context.pawnAI.ChangeParam(param, amount);
             }
+            return true;
         }
         
     }
